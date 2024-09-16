@@ -1,0 +1,41 @@
+# Posts
+
+An index for all of the posts on this site. These pages contain things I find interesting or 
+useful. Some were written prior to this site, but have been updated. Don't expect frequent posts.
+
+:::: side-by-side
+
+:::
+
+# Date
+
+---
+
+## 2024
+
+{.index-list}
+- {=Sep 13=} [Test Page](test_page)
+- {=Sep 03=} [Prototype 2 on Modern Systems]()
+- {=Aug 23=} [TrueNAS Automatic Backups]()
+- {=Aug 18=} [XBOX Modding in 2024]()
+- {=Aug 10=} [Laser Printing]()
+
+{% djot break %}
+
+:::
+
+:::
+
+# Series
+
+---
+
+## Video Games
+
+{.index-list}
+- {=Sep 03=} [Prototype 2 on Modern Systems]()
+- {=Aug 18=} [XBOX Modding in 2024]()
+
+:::
+
+::::

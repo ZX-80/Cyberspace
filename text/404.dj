@@ -1,0 +1,22 @@
+:{#metadata
+  title="404" 
+  banner="blue-and-white-planet-display.jpg"
+}
+
+::: center
+# HTTP 404 Not Found
+
+---
+
+You're looking for something that does not, has not, will not, might not or must not exist ...\
+... but you're always welcome to search for it.
+
+```=html
+<form action="https://google.com/search" method="get">
+  <input type="hidden" name="sitesearch" value="wasteofcyberspace.net" />
+  <input type="text" name="q" style="margin-bottom: 0.5rem; width: 18rem" />
+  <br>
+  <input type="submit" value="Search" />
+</form>
+```
+:::

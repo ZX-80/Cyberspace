@@ -1,0 +1,367 @@
+:{#metadata
+  title="Testing 1 2 3" 
+  banner="blue-and-white-planet-display.jpg"
+}
+
+# Test page
+
+This is just a test page so I can check if anything breaks when I update the code / CSS.
+
+Mainly based on the [djot syntax reference](https://htmlpreview.github.io/?https://github.com/jgm/djot/blob/master/doc/syntax.html).
+
+## TOC Macro
+
+:{#toc}
+
+## Block Syntax
+
+---
+
+## Paragraph
+
+This is a paragraph of text
+
+## Block Quote
+
+> This is a block quote.
+>
+> 1. with a
+> 2. list in it.
+
+## Lists
+
+- Bullet item 1
+- Bullet item 2
+
+  - Indented bullet item 1
+  - Indented bullet item 2
+- Bullet item 3
+
+{% djot break %}
+
+1. Decimal item 1
+2. Decimal item 2
+
+  1. Indented decimal item 1
+  2. Indented decimal item 2
+3. Decimal item 3
+
+{% djot break %}
+
+a. Alpha item 1
+b. Alpha item 2
+
+  a. Indented alpha item 1
+  b. Indented alpha item 2
+c. Alpha item 3
+
+{% djot break %}
+
+i. Roman lower item 1
+i. Roman lower item 2
+
+  i. Indented roman lower item 1
+  i. Indented roman lower item 2
+i. Roman lower item 3
+
+{% djot break %}
+
+I. Roman upper item 1
+I. Roman upper item 2
+
+  I. Indented roman upper item 1
+  I. Indented roman upper item 2
+I. Roman upper item 3
+
+{% djot break %}
+
+- [ ] Task item 1
+- [x] Task item 2
+
+  - [ ] Indented task item 1
+  - [X] Indented task item 2
+- [ ] Task item 3
+
+{% djot break %}
+
+: orange
+
+  A citrus fruit.
+
+: Hip
+  
+  part of the human anatomy
+  
+  to be cool
+  
+  an angled obstacle skateboarders use to perform tricks
+
+## Code Block
+
+```
+This should be raw text with no title or line numbers.
+
+  | Name  | Type     | Params
+-----------------------------------
+0 | model | Fontogen | 73.7 M
+-----------------------------------
+73.7 M    Trainable params
+0         Non-trainable params
+73.7 M    Total params
+294.728   Total estimated model params size (MB)
+```
+
+{title="" lineno=122 hl_lines="1,3"}
+```python
+# Starts at line 122, no title, highlights lines 122 and 124.
+def generate_html(self):
+    result = []
+    current_node = self.html_tree_root
+    result = self.generate_html_helper(result, current_node, -1)
+    return '\n'.join(result)
+```
+
+{lineno=0 title="Not Python"}
+```python
+# No line numbers, has the title "Not Python"
+def generate_html(self):
+    result = []
+    current_node = self.html_tree_root
+    result = self.generate_html_helper(result, current_node, -1)
+    return '\n'.join(result)
+
+    result = self.generate_html_helper(result, current_node, -1)result = self.generate_html_helper(result, current_node, -1)result = self.generate_html_helper(result, current_node, -1)result = self.generate_html_helper(result, current_node, -1)result = self.generate_html_helper(result, current_node, -1)
+```
+
+````lua
+-- Has line numbers and an automatic title
+----------------------------------------------------
+-- 1. Variables and flow control.
+----------------------------------------------------
+
+num = 42  -- Numbers can be integer or floating point.
+
+s = 'walternate'  -- Immutable strings like Python.
+t = "double-quotes are also fine"
+u = [[ Double brackets
+       start and end
+       multi-line strings.]]
+t = nil  -- Undefines t; Lua has garbage collection.
+
+-- Blocks are denoted with keywords like do/end:
+while num < 50 do
+  num = num + 1  -- No ++ or += type operators.
+end
+
+-- If clauses:
+if num > 40 then
+  print('over 40')
+elseif s ~= 'walternate' then  -- ~= is not equals.
+  -- Equality check is == like Python; ok for strs.
+  io.write('not over 40\n')  -- Defaults to stdout.
+else
+  -- Variables are global by default.
+  thisIsGlobal = 5  -- Camel case is common.
+
+  -- How to make a variable local:
+  local line = io.read()  -- Reads next stdin line.
+
+  -- String concatenation uses the .. operator:
+  print('Winter is coming, ' .. line)
+end
+````
+
+## Thematic Break
+
+---
+
+## Raw Block
+
+```=html
+<p><em>emphasized text</em></p>
+<p><strong>strong emphasis</strong></p>
+```
+
+## Special Divs
+
+:::: note
+Highlights information that users should take into account, even when skimming.
+::::
+
+:::: tip
+Optional information to help a user be more successful.
+::::
+
+:::: important
+Crucial information necessary for users to succeed.
+::::
+
+:::: warning
+Critical content demanding immediate user attention due to potential risks.
+::::
+
+:::: caution
+Negative potential consequences of an action.
+::::
+
+:::: caution
+Crazy? I was crazy once. They locked me in a room. A rubber room filled with rats. And rats make me crazy. 
+Crazy? I was crazy once. They locked me in a room. A rubber room filled with rats. And rats make me crazy. 
+Crazy? I was crazy once. They locked me in a room. A rubber room filled with rats. And rats make me crazy. 
+Crazy? I was crazy once. They locked me in a room. A rubber room filled with rats. And rats make me crazy. 
+Crazy? I was crazy once. They locked me in a room. A rubber room filled with rats. And rats make me crazy. 
+Crazy? I was crazy once. They locked me in a room. A rubber room filled with rats. And rats make me crazy. 
+
+Crazy? I was crazy once. They locked me in a room. A rubber room filled with rats. And rats make me crazy. 
+Crazy? I was crazy once. They locked me in a room. A rubber room filled with rats. And rats make me crazy. 
+Crazy? I was crazy once. They locked me in a room. A rubber room filled with rats. And rats make me crazy. 
+Crazy? I was crazy once. They locked me in a room. A rubber room filled with rats. And rats make me crazy. 
+Crazy? I was crazy once. They locked me in a room. A rubber room filled with rats. And rats make me crazy...
+::::
+
+## Tables
+
+|                 | Software / Hardware                                      |
+| --------------- | -------------------------------------------------------- |
+| **OS**          | TrueNAS Scale                                            |
+| **Chassis**     | TerraMaster D5-300 5-Bay DAS<br />MeLE Mini PC Quieter2Q |
+| **Motherboard** | ASRock J3455B-ITX                                        |
+| **CPU**         | Intel Celeron Quad-Core Processor J4125                  |
+| **RAM**         | 8GB                                                      |
+| **Networking**  | Gigabit Ethernet                                         |
+| **Storage**     | OS: 256GB internal flash<br />==4x 8TB CMR HDD==         |
+^ This is the caption.  It can contain _inline formatting_
+  and can extend over multiple lines, provided they are
+  indented relative to the `^`.
+
+## Link
+
+[My link text](http://example.com)
+
+## Reference link 
+
+[I am a reference link][google]
+
+[google]: https://google.com
+
+## Footnote
+
+Here's the reference.[^foo]
+
+[^foo]: This is a note
+  with two paragraphs.
+
+  Second paragraph.
+
+  > a block quote in the note.
+
+## Heading links
+
+See the [Heading links][].
+
+## Image
+
+![Profile](/images/profile.png){style="width: 30rem"}
+
+## Autolink
+
+<https://pandoc.org/lua-filters>
+
+## Verbatim
+
+This `text` contains verbatim text.
+
+## Bold / Italic
+
+_I am italic_ and *I am bold*.
+
+## Highlighting
+
+This is {=highlighted text=}.
+
+## Super/subscript
+
+H~2~O and djot^TM^
+
+## Insert/delete
+
+My boss is {-mean-}{+nice+}.
+
+## Smart punctuation
+
+"Hello," said the spider. "'Shelob' is my name."
+
+57--33 oxen---and no sheep...
+
+## Math
+
+Einstein derived $`e=mc^2`.
+Pythagoras proved
+$$` x^n + y^n = z^n `
+
+## Line break
+
+This is a soft
+break and this is a hard\
+break.
+
+## Comment
+
+Foo bar {% This is a comment, spanning
+multiple lines %} baz.
+
+## Symbols
+
+My reaction is :+1: :smiley:.
+
+## Raw Inline
+
+This is `<?php echo 'Hello world!' ?>`{=html}.
+
+## Span
+
+It can be helpful to [read the manual]{.big .red}.
+
+## Custom
+
+---
+
+Most of the above are supported by djot, but the below are only supported by this SSG.
+
+## Index List
+
+{.index-list}
+- {=Highlighted text=} First item
+- No highlights Second item
+
+## Mermaid
+
+```mermaid
+  graph TD
+  A[Client] --> B[Load Balancer]
+  B --> C[Server01]
+  B --> D[Server02]
+```
+
+## Tabs
+
+::: tabset
+### One Thing
+
+Sentences.
+
+{.active}
+### Context
+
+Other sentences.
+:::
+
+## Side by Side Content
+
+::: side-by-side
+
+This paragraph is on the left.
+
+This paragraph is on the right.
+
+:::

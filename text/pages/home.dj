@@ -1,0 +1,88 @@
+:{#metadata
+  title="home" 
+  banner="hawaii.jpg"
+}
+
+## About
+
+---
+
+:::: side-by-side
+
+:::
+
+I'm a software developer from Belfast, currently living in the US of A :statue_of_liberty:​.
+
+This website serves as a portfolio of my projects, and a place to post content I find interesting or useful.
+It was generated using a custom [static site generator](https://en.wikipedia.org/wiki/Static_site_generator),
+is currently hosted on GitHub pages, and built via GitHub actions.
+
+I can be reached via email at <contact@wasteofcyberspace.net> or on GitHub at <https://github.com/ZX-80>.
+
+:::
+
+{style="width: 20rem;"}
+![USA Flag](/images/Flag_of_the_United_States.png){style="aspect-ratio: 40 / 21;"}
+
+::::
+
+## Site Info
+
+---
+
+My first website was written in 2017 with raw HTML/CSS and has unfortunately been abandoned for many years (writing each page like that is 
+no fun). This project started around 2023, as a spin-off from a [djot](https://djot.net/) parser I was writing for [Python](https://www.python.org/). I figured 
+if I could turn simple documents like djot into HTML I might as well fix up my old website.
+
+### Features
+
+  - Easily extensible via filters
+
+    - [Mermaid JS](https://mermaid.js.org/) charts
+    - GitHub style [alerts](https://github.com/orgs/community/discussions/16925)
+    - Syntax highlighting (580+ languages)
+    - Tabs
+    - Table of contents (TOC)
+  - [MathML](https://developer.mozilla.org/en-US/docs/Web/MathML) support
+  - Uses git to manage created / edited dates
+  - Page metadata
+  - Automatic anchors for page elements
+  - Generated navigation bar with TOC
+  - Supports 60+ document types as input
+  
+To speed up development, I've made use of some other libraries:
+
+- [Pygments](https://pygments.org/): Syntax highlighting for nearly 580+ languages.
+- [Pandoc](https://pandoc.org/): Document to HTML conversion
+- [Panflute](https://github.com/sergiocorreia/panflute): Easy editing of pandoc documents
+- [dominate](https://github.com/Knio/dominate/tree/master): HTML templating in Python
+
+### Building
+
+Building is as simple as `git push`, after which a GitHub action will install and run the build script at <https://github.com/ZX-80/Cyberspace>,
+publishing to GitHub pages.
+
+The build script itself will scan for css files, top-level source files (for the navigation bar), and filters. Then it will run each 
+source file in the source directory through the following stages:
+
+1. Convert the document to a panflute document
+2. Apply filters one by one
+3. Convert the panflute document into the article HTML
+4. Wrap the article HTML to get the page HTML
+
+```mermaid
+flowchart LR
+    %% Convert to panflute document
+    Document -- pandoc --> panflute_doc[Panflute Document]
+    %% Apply filters
+    panflute_doc --> Filters --> panflute_doc
+    %% Convert to article HTML
+    panflute_doc -- pandoc --> article_html[Article HTML] 
+    %% Wrap article HTML in page HTML
+    article_html --> full_html[Full HTML]
+```
+
+---
+
+Unless stated otherwise, all content on this site is published under [CC-BY-SA](https://creativecommons.org/licenses/by-sa/4.0/).
+All code on this site is available under the [MPL](https://www.mozilla.org/en-US/MPL/2.0/).

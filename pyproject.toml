@@ -1,0 +1,40 @@
+[project]
+name = "cyberspace_ssg"
+version = "1.0.0"
+description = "Generates a website from markdown files."
+requires-python = ">= 3.12"
+readme = "README.md"
+dependencies = [
+    "dominate == 2.9.1",
+    "panflute == 2.3.1",
+    "pandoc == 2.4",
+    "pylint == 3.2.7",
+    "Pygments == 2.16.1",
+    "mypy == 1.11.2",
+    "black == 24.8.0",
+    "isort == 5.13.2",
+]
+
+[project.scripts]
+cyberspace = "cyberspace_ssg.__main__:main"
+
+[tool.black]
+target-version = ["py312"]
+line-length = 120
+
+[tool.pylint.messages_control]
+max-line-length = 120
+disable = ["fixme", "logging-fstring-interpolation"]
+
+[tool.pylint.design]
+max-bool-expr = 10
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "./src"
+strict = true
+ignore_missing_imports = true
+
+[tool.isort]
+line_length = 120
+profile = "black"
