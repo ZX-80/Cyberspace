@@ -14,12 +14,8 @@ import panflute as pf
 from . import filters, formats
 from .config import CSS_PATH, IMAGE_PATH, NAV_PATH, SOURCE_PATH, WEB_PATH, logger
 
-# make git commit
 # CSS styles (tables, etc.)
 # TODO: Titles should be links (possibly with anchor icon)
-# Go live
-
-# Future
 # TODO: strip metadata (exiftool -all= file)
 # TODO: filters priority
 # TODO: external link icon
