@@ -1,6 +1,7 @@
 """Build a static website."""
 
 import pkgutil
+import shutil
 import time
 from importlib import import_module
 from pathlib import Path
@@ -90,7 +91,7 @@ class DocumentConstructor:
         )
         return html, {key: document_tree.get_metadata(key) for key in document_tree.metadata}
 
-    def generate_page(self, html: str, metadata: dict[str, Any]) -> str:
+    def generate_page(self, html: str, metadata: dict[str, Any], source_file: Path) -> str:
         """Add document and navbar html."""
 
         title = metadata.get("title", metadata.get("auto-title", "Page"))
@@ -131,7 +132,7 @@ class DocumentConstructor:
                             dom_util.raw(html)
                         with dom.footer():
                             with dom.p():
-                                dom.a("Source", href="")
+                                dom.a("Source", href=source_file)
                                 dom_util.text(" | ")
                                 dom.a("Change log", href="")
 
@@ -139,12 +140,16 @@ class DocumentConstructor:
 
     def write_html(self, html: str, metadata: dict[str, Any], source_file: Path) -> None:
         """Write HTML based on source path."""
+        # Write HTML
         html_path = self.web_path / source_file.with_suffix(".html")
         html_path.parent.mkdir(parents=True, exist_ok=True)
         html_path.write_text(html, encoding="utf-8")
         if metadata.get("type") == "index":
             html_path = self.web_path / "index.html"
             html_path.write_text(html, encoding="utf-8")
+
+        # Copy raw file over
+        shutil.copyfile(self.source_path / source_file, self.web_path / source_file)
 
     def generate_website(self) -> None:
         """Convert all files in source path."""
@@ -155,7 +160,7 @@ class DocumentConstructor:
                 start_time = time.perf_counter()
                 try:
                     article_html, article_metadata = self.convert_source_to_html(full_source_file)
-                    document_html = self.generate_page(article_html, article_metadata)
+                    document_html = self.generate_page(article_html, article_metadata, source_file)
                     self.write_html(document_html, article_metadata, full_source_file.relative_to(self.source_path))
                 except RuntimeError as e:
                     logger.error(f"  Failed: {e}")
