@@ -72,6 +72,11 @@ body {
   display: flex;
 }
 
+a {
+  color: var(--rawLinkColor);
+  text-decoration: none;
+}
+
 /* Link colors */
 a:link,
 a:visited {
@@ -148,6 +153,47 @@ h3.sidebar {
 
 /* ================ ARTICLE ================ */
 
+.index-list input[type="radio"] {
+  appearance: none;
+  display: none;
+}
+
+[id^=radio]:checked~.highlighted {
+  background: #fd9;
+}
+
+[class^=changelog-diff] {
+  display: none;
+}
+
+pre.diff p.diff-header {
+  background: #204550;
+  margin: 0;
+  padding: 0.5rem;
+  overflow: clip
+}
+
+pre.diff {
+  margin: 0;
+}
+
+pre.diff p.diff-content {
+  padding: 0rem 0.5rem;
+  overflow-x: auto;
+  margin: 0;
+  padding: 0.8rem;
+}
+
+pre.diff del {
+  background-color: #502020;
+  text-decoration: none;
+}
+
+pre.diff ins {
+  background-color: #305030;
+  text-decoration: none;
+}
+
 article p>code,
 article a code,
 article li code,
@@ -215,6 +261,7 @@ article .side-by-side-center>* {
   flex-grow: 1;
   overflow-x: clip;
   width: 100%;
+  min-width: 0;
 }
 
 hr {

@@ -1,9 +1,12 @@
 __pycache__/
 *.egg-info/
 .vscode/
-/web/pages/
 /web/*
 !/web/favicon.ico
+!/web/scripts/
+!/web/layouts/
+!/web/images/
+!/web/fonts/
 build/
 web/images/Home_server_setup/
 text/pages/projects/Home_server_setup.dj

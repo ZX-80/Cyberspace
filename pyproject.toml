@@ -24,6 +24,7 @@ line-length = 120
 
 [tool.pylint.messages_control]
 max-line-length = 120
+max-locals = 30
 disable = ["fixme", "logging-fstring-interpolation"]
 
 [tool.pylint.design]
