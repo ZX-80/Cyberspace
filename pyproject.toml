@@ -18,6 +18,9 @@ dependencies = [
 [project.scripts]
 cyberspace = "cyberspace_ssg.__main__:main"
 
+[tool.setuptools.package-data]
+cyberspace_ssg = ["*.*"] # Include all data files in package root
+
 [tool.black]
 target-version = ["py312"]
 line-length = 120
