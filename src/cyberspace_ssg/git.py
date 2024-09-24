@@ -45,20 +45,20 @@ def get_file_at_commit(file_path: Path, commit: str) -> str:
     return subprocess.run(shlex.split(command, posix=False), capture_output=True, text=True, check=True).stdout
 
 
-def get_file_commits(file_path: Path) -> list[tuple[str, datetime.datetime, str]]:
-    """Get a files commits in the form: hash,iso date,subject"""
+def get_file_commits(file_path: Path) -> list[tuple[str, datetime.datetime, str, str]]:
+    """Get a files commits (separated by NUL) in the form: hash,iso date,subject\nbody"""
 
-    def convert_commit(commit: str) -> tuple[str, datetime.datetime, str]:
+    def convert_commit(commit: str) -> tuple[str, datetime.datetime, str, str]:
         """Convert a commit line."""
-        result = commit[1:-1].split(",", 2)
-        result[1] = datetime.datetime.fromisoformat(result[1])
-        return result
+        hash_id, date_string, subject_body = commit[1:-1].split(",", 2)
+        date = datetime.datetime.fromisoformat(date_string)
+        subject, _, body = subject_body.partition("\n")
+        return hash_id, date, subject, body
 
-    # print(file_path, str(file_path), shlex.split(str(file_path), posix=False))
     commits = subprocess.run(
-        shlex.split(f'git log --pretty="%H,%aI,%s" {str(file_path)}', posix=False),
+        shlex.split(f'git log --pretty="%H,%aI,%s%n%b" -z {str(file_path)}', posix=False),
         capture_output=True,
         text=True,
         check=True,
     ).stdout
-    return [convert_commit(commit) for commit in commits.splitlines()]
+    return [convert_commit(commit) for commit in commits.split(chr(0))[:-1]]

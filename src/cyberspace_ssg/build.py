@@ -116,14 +116,17 @@ class DocumentConstructor:
         radio_counter = itertools.count()
 
         diffs = ""
-        diff_template = "::: changelog-diff{diff_id}\n\n*Commit*: `{git_hash}`\n\n``` =html\n{html}\n```\n:::\n"
+        diff_template = (
+            "::: changelog-diff{diff_id}\n{body}\n\n``` =html\n{html}\n```\n"
+            "{{.right-align}}\nCommit: `{git_hash}`\n\n:::\n"
+        )
         diff_counter = itertools.count()
 
         css_selectors = []
         css_selector_template = ".side-by-side:has(#{radio_id}:checked) .{div_id}"
 
         # Fetch git information for file
-        for git_hash, date, subject in git.get_file_commits(full_path):
+        for git_hash, date, subject, body in git.get_file_commits(full_path):
             # Commit list year
             if year is None or date.year < year:
                 year = date.year
@@ -131,7 +134,9 @@ class DocumentConstructor:
 
             # Diff
             diff_id = next(diff_counter)
-            diffs += diff_template.format(html=git.diff_html(full_path, git_hash), diff_id=diff_id, git_hash=git_hash)
+            diffs += diff_template.format(
+                html=git.diff_html(full_path, git_hash), diff_id=diff_id, git_hash=git_hash, body=body
+            )
 
             # Commit list
             radio_id = next(radio_counter)

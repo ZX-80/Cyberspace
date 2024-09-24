@@ -166,6 +166,10 @@ h3.sidebar {
   display: none;
 }
 
+.right-align {
+  text-align: right;
+}
+
 pre.diff p.diff-header {
   background: #204550;
   margin: 0;
