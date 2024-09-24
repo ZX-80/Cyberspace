@@ -34,6 +34,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+      - name: Archive
+        run: git archive -o ./web/repo.zip HEAD
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
@@ -48,8 +50,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install .
       - name: Build
-        run: |
-          python -m cyberspace_ssg build -v
+        run: python -m cyberspace_ssg build -v
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
