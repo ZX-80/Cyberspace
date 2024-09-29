@@ -1,14 +1,16 @@
 """Build a static website."""
 
+import concurrent.futures
 import itertools
 import pkgutil
 import shutil
 import time
-from enum import Enum, auto
+import traceback
+from contextlib import contextmanager
 from importlib import import_module
 from pathlib import Path
 from string import Template
-from typing import Any
+from typing import Any, Iterator
 
 import dominate
 import dominate.tags as dom
@@ -16,43 +18,33 @@ import dominate.util as dom_util
 import panflute as pf
 
 from . import filters, formats, git
-from .config import CSS_PATH, IMAGE_PATH, NAV_PATH, SOURCE_PATH, WEB_PATH, logger
+from .config import CHANGELOG_TEMPLATE, CSS_PATH, IMAGE_PATH, NAV_PATH, PROFILE_IMAGE, SOURCE_PATH, WEB_PATH, logger
 
-# CSS styles (tables, etc.)
-# TODO: RSS / Atom feed
+# TODO: Collect git information in one call
 # TODO: Titles should be links (possibly with anchor icon)
-# TODO: external link icon
-# TODO: strip metadata (exiftool -all= file)
-# TODO: filters priority
-# TODO: automatic post generation
-# TODO: Series TOC (next, prev)
-# TODO: Site download link
 # TODO: Git integration
 #   date edited, date created
-#   cache builds (-f to force all, use git to detect change)
-# TODO: Light / dark theme JS?  (requires re-theming)
-# TODO: Printing / reader support
+# TODO: filters priority
+# TODO: external link icon
+# TODO: automatic post generation
+# TODO:   RSS / Atom feed
+# TODO: Series TOC (next, prev)
+# FIXME: CSS styles (tables, etc.)
 # TODO: Mobile phone support (side bar -> burger menu)
+# TODO: Printing / reader support
+# TODO: Light / dark theme JS?  (requires re-theming)
 # TODO: Highlight current title in sidebar?
 # TODO: compile pdoc to appear on website
+# TODO: strip metadata (exiftool -all= file)
 
 
-PROFILE_IMAGE = "profile.png"
-"""Filename for default profile image."""
+class SiteConstructor:
+    """Generate data for use by the site templates."""
 
-CHANGELOG_TEMPLATE = "changelog_template.dj"
-"""Filename for the changelog template."""
-
-
-class PageType(Enum):
-    """The type of page being made."""
-
-    LATEST = auto()
-    CHANGE_LOG = auto()
-
-
-class DocumentConstructor:
-    """Builds the website from source/web files."""
+    def __new__(cls, source_path: Path, web_path: Path, profile_image: str) -> None:
+        """Destroy the instance after initialization."""
+        instance = super().__new__(cls)
+        instance.__init__(source_path, web_path, profile_image)
 
     def __init__(self, source_path: Path, web_path: Path, profile_image: str) -> None:
         self.source_path = source_path
@@ -65,14 +57,14 @@ class DocumentConstructor:
         ]
 
         # Locate all top-level source paths
-        nav_elements = sorted(
+        self.nav_elements = sorted(
             (
                 Path("/") / path.with_suffix("").relative_to(self.source_path)
                 for path in (self.source_path / NAV_PATH).iterdir()
             ),
             key=lambda path: (path.is_file(), path),
         )
-        self.nav_elements = {nav_path.stem.title().replace("_", " "): nav_path for nav_path in nav_elements}
+        self.nav_elements = {nav_path.stem.title().replace("_", " "): nav_path for nav_path in self.nav_elements}
         logger.debug(f"Nav elements: {", ".join(self.nav_elements)}")
 
         # Locate all filter modules
@@ -83,11 +75,14 @@ class DocumentConstructor:
         filter_names = map(lambda module: module.__name__.removeprefix(f"{filters.__name__}."), self.filter_modules)
         logger.debug(f"Filter modules: {", ".join(filter_names)}")
 
-    def convert_source_to_html(self, source_file: Path) -> tuple[str, dict[str, Any]]:
-        """Converts source file to pure html."""
-        source_text = source_file.read_text("utf-8", errors="ignore")
-        input_format = formats.from_extension(source_file.suffix)
+        self.batch_process_files()
 
+    def changelog_name(self, file_path: Path) -> Path:
+        """Convert regular path to changelog path."""
+        return file_path.with_stem(f"{file_path.stem}-changelog")
+
+    def convert_source_to_html(self, source_text: str, input_format: str) -> tuple[str, dict[str, Any]]:
+        """Converts source file to pure html."""
         # Get document tree and apply filters
         document_tree = pf.convert_text(source_text, input_format, standalone=True)
         for filter_module in self.filter_modules:
@@ -98,14 +93,14 @@ class DocumentConstructor:
             document_tree,
             input_format="panflute",
             output_format="html",
-            extra_args=["--no-highlight", "--metadata=panflute-verbose:True", "--mathml"],
+            extra_args=["--no-highlight", "--mathml"],
         )
         return html, {key: document_tree.get_metadata(key) for key in document_tree.metadata}
 
-    def generate_source_changelog(self, source_file: Path) -> tuple[str, dict[str, Any]]:
+    def generate_source_changelog(self, relative_file_path: Path) -> tuple[str, dict[str, Any]]:
         """Construct a changelog page."""
         year: int | None = None
-        full_path = self.source_path / source_file
+        full_path = self.source_path / relative_file_path
 
         # Templates
         commit_list = ""
@@ -156,21 +151,16 @@ class DocumentConstructor:
         raw_changelog = Template(changelog_path.read_text("utf-8")).substitute(
             selectors=",\n".join(css_selectors), commit_list=commit_list, diffs=diffs
         )
-        changelog_file = (
-            self.web_path
-            / "changelog"
-            / full_path.with_stem(f"{full_path.stem}-changelog")
-            .with_suffix(f"{changelog_path.suffix}.txt")
-            .relative_to(self.source_path)
+        changelog_file = self.web_path / self.changelog_name(relative_file_path).with_suffix(
+            f"{changelog_path.suffix}.txt"
         )
         changelog_file.parent.mkdir(parents=True, exist_ok=True)
         changelog_file.write_text(raw_changelog)
-        changelog_html, changelog_metadata = self.convert_source_to_html(changelog_file)
+        input_format = formats.from_extension(Path(CHANGELOG_TEMPLATE).suffix)
+        changelog_html, changelog_metadata = self.convert_source_to_html(raw_changelog, input_format)
         return changelog_html, changelog_metadata
 
-    def generate_page(
-        self, html: str, metadata: dict[str, Any], source_file: Path, page_type: PageType = PageType.LATEST
-    ) -> str:
+    def generate_page(self, html: str, metadata: dict[str, Any], file_name: Path, changelog: bool = False) -> str:
         """Add document and navbar html."""
 
         title = metadata.get("title", metadata.get("auto-title", "Page"))
@@ -211,82 +201,96 @@ class DocumentConstructor:
                             dom_util.raw(html)
                         with dom.footer():
                             with dom.p():
-                                match page_type:
-                                    case PageType.LATEST:
-                                        dom.a("Source", href=source_file.with_suffix(f"{source_file.suffix}.txt").name)
-                                        dom_util.text(" | ")
-                                        dom.a("Change log", href="/changelog" / source_file.with_suffix(""))
-                                    case PageType.CHANGE_LOG:
-                                        dom.a(
-                                            "Source",
-                                            href=source_file.with_stem(f"{source_file.stem}-changelog")
-                                            .with_suffix(f"{source_file.suffix}.txt")
-                                            .name,
-                                        )
-                                        dom_util.text(" | ")
-                                        dom.a(
-                                            "Latest",
-                                            href="/" / source_file.with_suffix("").relative_to("changelog"),
-                                        )
-        return str(page)
+                                if changelog:
+                                    dom.a(
+                                        "Source",
+                                        href=self.changelog_name(file_name).with_suffix(f"{file_name.suffix}.txt"),
+                                    )
+                                    dom_util.text(" | ")
+                                    dom.a(
+                                        "Latest",
+                                        href=file_name.with_suffix(""),
+                                    )
+                                else:
+                                    dom.a(
+                                        "Source",
+                                        href=file_name.with_suffix(f"{file_name.suffix}.txt"),
+                                    )
+                                    dom_util.text(" | ")
+                                    dom.a(
+                                        "Change log",
+                                        href=self.changelog_name(file_name).with_suffix(""),
+                                    )
+        return page.render()
 
-    def write_source_html(self, html: str, source_file: Path) -> None:
-        """Write HTML based on source path."""
+    def write_html(self, relative_file_path: Path, changelog: bool = False) -> None:
+        """Generate and write HTML based on file path."""
+
+        # Generate HTML
+        if changelog:
+            article_html, metadata = self.generate_source_changelog(relative_file_path)
+            html_path = self.web_path / self.changelog_name(relative_file_path).with_suffix(".html")
+        else:
+            source_text = (self.source_path / relative_file_path).read_text("utf-8", errors="ignore")
+            input_format = formats.from_extension(relative_file_path.suffix)
+            article_html, metadata = self.convert_source_to_html(source_text, input_format)
+            html_path = self.web_path / relative_file_path.with_suffix(".html")
+        document_html = self.generate_page(article_html, metadata, Path(relative_file_path.name), changelog)
+
         # Write HTML
-        html_path = self.web_path / source_file.with_suffix(".html")
         html_path.parent.mkdir(parents=True, exist_ok=True)
-        html_path.write_text(html, "utf-8")
+        html_path.write_text(document_html, "utf-8")
 
-    def generate_website(self) -> None:
+    def process_file(self, relative_file_path: Path) -> None:
+        """Convert a file to a webpage."""
+        logger.info(f"Converting {relative_file_path}")
+
+        @contextmanager
+        def timer(name: str) -> Iterator[None]:
+            """Track runtime in context."""
+            start = time.perf_counter()
+            yield
+            logger.debug(f"{name} time: {time.perf_counter() - start:05.2f} seconds - {relative_file_path}")
+
+        try:
+            # Generate article
+            with timer("Execution"):
+                self.write_html(relative_file_path)
+                shutil.copyfile(  # Copy raw file over
+                    self.source_path / relative_file_path,
+                    self.web_path / relative_file_path.with_suffix(f"{relative_file_path.suffix}.txt"),
+                )
+
+            # Generate changelog
+            with timer("Changelog"):
+                self.write_html(relative_file_path, True)
+        except RuntimeError as e:
+            logger.error(f"  Failed: {e}")
+
+    def batch_process_files(self) -> None:
         """Convert all files in source path."""
         total_start_time = time.perf_counter()
-        files_converted = 0
-        for dirpath, _dirnames, filenames in self.source_path.walk():
-            for source_file in filenames:
-                full_source_file = (dirpath / source_file).relative_to(self.source_path)
-                logger.info(f"Converting {source_file}")
+        futures = []
 
-                # Generate page
-                start_time = time.perf_counter()
-                try:
-                    article_html, article_metadata = self.convert_source_to_html(self.source_path / full_source_file)
-                    document_html = self.generate_page(article_html, article_metadata, full_source_file)
-                    self.write_source_html(document_html, full_source_file)
-                    shutil.copyfile(  # Copy raw file over
-                        self.source_path / full_source_file,
-                        self.web_path / full_source_file.with_suffix(f"{full_source_file.suffix}.txt"),
+        # Spawn threads
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for dirpath, _dirnames, filenames in self.source_path.walk():
+                for source_file in filenames:
+                    futures.append(
+                        executor.submit(self.process_file, dirpath.relative_to(self.source_path) / source_file)
                     )
-                except RuntimeError as e:
-                    logger.error(f"  Failed: {e}")
-                logger.debug(f"Execution time: {time.perf_counter() - start_time:.2f} seconds")
 
-                # Generate changelog
-                start_time = time.perf_counter()
-                changelog_path = Path("changelog") / full_source_file
-                try:
-                    changelog_html, changelog_metadata = self.generate_source_changelog(full_source_file)
-                    changelog_document = self.generate_page(
-                        changelog_html, changelog_metadata, changelog_path, PageType.CHANGE_LOG
-                    )
-                    self.write_source_html(changelog_document, changelog_path)
-                except RuntimeError as e:
-                    logger.error(f"  Failed: {e}")
-                logger.debug(f"Changelog time: {time.perf_counter() - start_time:.2f} seconds")
+        # Check for exceptions
+        for future in futures:
+            if exception := future.exception():
+                logger.error("".join(traceback.format_exception(exception)))
 
-                files_converted += 1
-        logger.info(f"Converted {files_converted} files in {time.perf_counter() - total_start_time:.2f} seconds")
+        logger.info(f"Converted {len(futures)} files in {time.perf_counter() - total_start_time:.2f} seconds")
 
 
 def main(source_path: Path | None = None, web_path: Path | None = None, profile_image: str | None = None) -> None:
     """Generate the website."""
-    if source_path is None:
-        source_path = SOURCE_PATH
-    if web_path is None:
-        web_path = WEB_PATH
-    if profile_image is None:
-        profile_image = PROFILE_IMAGE
-    document_constructor = DocumentConstructor(source_path, web_path, profile_image)
-    document_constructor.generate_website()
+    SiteConstructor(source_path or SOURCE_PATH, web_path or WEB_PATH, profile_image or PROFILE_IMAGE)
 
 
 if __name__ == "__main__":

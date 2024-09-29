@@ -35,6 +35,9 @@ def initialize_logging(log_level: int = logging.DEBUG) -> None:
             self._style._fmt = self.color_format.get(record.levelno, self._style._fmt)
             return super().format(record)
 
+    while logger.hasHandlers():  # Remove existing handlers
+        logger.removeHandler(logger.handlers[0])
+
     logger.setLevel(log_level)
     terminal_logger = logging.StreamHandler()
     terminal_logger.setLevel(log_level)
@@ -69,7 +72,9 @@ def main() -> None:
     parser_build.set_defaults(func=lambda args: build.main(args.source, args.html, args.profile))
 
     args = parser.parse_args()
-    initialize_logging(10 if args.verbose else 30 if args.silent else 20)
+    initialize_logging(
+        10 if hasattr(args, "verbose") and args.verbose else 30 if hasattr(args, "silent") and args.silent else 20
+    )
     args.func(args)
 
 

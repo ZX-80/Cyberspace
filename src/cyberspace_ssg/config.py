@@ -21,4 +21,10 @@ JS_PATH = Path("scripts")
 IMAGE_PATH = Path("images")
 """The path to all image files."""
 
-logger = logging.getLogger("Cyberspace SSG")
+PROFILE_IMAGE = "profile.png"
+"""Filename for default profile image."""
+
+CHANGELOG_TEMPLATE = "changelog_template.dj"
+"""Filename for the changelog template."""
+
+logger = logging.getLogger("SSG")

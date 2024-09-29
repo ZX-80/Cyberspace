@@ -44,7 +44,7 @@ if I could turn simple documents like djot into HTML I might as well fix up my o
     - Tabs
     - Table of contents (TOC)
   - [MathML](https://developer.mozilla.org/en-US/docs/Web/MathML) support
-  - Uses git to manage created / edited dates
+  - Uses git to manage created / edited dates and changelog
   - Page metadata
   - Automatic anchors for page elements
   - Generated navigation bar with TOC
@@ -60,7 +60,7 @@ To speed up development, I've made use of some other libraries:
 ### Building
 
 Building is as simple as `git push`, after which a GitHub action will install and run the build script at <https://github.com/ZX-80/Cyberspace>,
-publishing to GitHub pages.
+publishing to GitHub pages. The entire git repository is available on this site at </repo.zip>
 
 The build script itself will scan for css files, top-level source files (for the navigation bar), and filters. Then it will run each 
 source file in the source directory through the following stages:
