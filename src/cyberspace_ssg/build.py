@@ -20,7 +20,6 @@ import panflute as pf
 from . import filters, formats, git
 from .config import CHANGELOG_TEMPLATE, CSS_PATH, IMAGE_PATH, NAV_PATH, PROFILE_IMAGE, SOURCE_PATH, WEB_PATH, logger
 
-# TODO: Collect git information in one call
 # TODO: Titles should be links (possibly with anchor icon)
 # TODO: Git integration
 #   date edited, date created
@@ -29,6 +28,7 @@ from .config import CHANGELOG_TEMPLATE, CSS_PATH, IMAGE_PATH, NAV_PATH, PROFILE_
 # TODO: automatic post generation
 # TODO:   RSS / Atom feed
 # TODO: Series TOC (next, prev)
+
 # FIXME: CSS styles (tables, etc.)
 # TODO: Mobile phone support (side bar -> burger menu)
 # TODO: Printing / reader support
@@ -121,25 +121,23 @@ class SiteConstructor:
         css_selector_template = ".side-by-side:has(#{radio_id}:checked) .{div_id}"
 
         # Fetch git information for file
-        for git_hash, date, subject, body in git.get_file_commits(full_path):
+        for commit, diff_html in git.get_file_commits(full_path):
             # Commit list year
-            if year is None or date.year < year:
-                year = date.year
+            if year is None or commit.date.year < year:
+                year = commit.date.year
                 commit_list += f"## {year}\n\n{{.index-list}}\n"
 
             # Diff
             diff_id = next(diff_counter)
-            diffs += diff_template.format(
-                html=git.diff_html(full_path, git_hash), diff_id=diff_id, git_hash=git_hash, body=body
-            )
+            diffs += diff_template.format(html=diff_html, diff_id=diff_id, git_hash=commit.hash_id, body=commit.body)
 
             # Commit list
             radio_id = next(radio_counter)
             commit_list += commit_list_template.format(
-                date=date.strftime("%b %d"),
-                date_iso=date.isoformat(),
+                date=commit.date.strftime("%b %d"),
+                date_iso=commit.date.isoformat(),
                 radio_id=radio_id,
-                text=subject,
+                text=commit.subject,
                 checked="" if css_selectors else "checked",
             )
             css_selectors.append(
@@ -155,7 +153,7 @@ class SiteConstructor:
             f"{changelog_path.suffix}.txt"
         )
         changelog_file.parent.mkdir(parents=True, exist_ok=True)
-        changelog_file.write_text(raw_changelog)
+        changelog_file.write_text(raw_changelog, "utf-8")
         input_format = formats.from_extension(Path(CHANGELOG_TEMPLATE).suffix)
         changelog_html, changelog_metadata = self.convert_source_to_html(raw_changelog, input_format)
         return changelog_html, changelog_metadata
@@ -271,6 +269,7 @@ class SiteConstructor:
         """Convert all files in source path."""
         total_start_time = time.perf_counter()
         futures = []
+        git.load_git_data()
 
         # Spawn threads
         with concurrent.futures.ThreadPoolExecutor() as executor:
