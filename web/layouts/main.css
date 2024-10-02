@@ -90,6 +90,11 @@ a:active {
   text-decoration: underline;
 }
 
+:is(h1, h2, h3, h4, h5, h6) :is(a:hover, a:active, a:link, a:visited) {
+  color: var(--textColor);
+  text-decoration: none;
+}
+
 /* ================ NAV ================ */
 
 .NavTitle {
