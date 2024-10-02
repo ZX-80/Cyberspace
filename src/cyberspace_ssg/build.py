@@ -20,16 +20,15 @@ import panflute as pf
 from . import filters, formats, git
 from .config import CHANGELOG_TEMPLATE, CSS_PATH, IMAGE_PATH, NAV_PATH, PROFILE_IMAGE, SOURCE_PATH, WEB_PATH, logger
 
-# TODO: Titles should be links (possibly with anchor icon)
 # TODO: Git integration
 #   date edited, date created
 # TODO: filters priority
-# TODO: external link icon
 # TODO: automatic post generation
 # TODO:   RSS / Atom feed
 # TODO: Series TOC (next, prev)
 
 # FIXME: CSS styles (tables, etc.)
+# TODO: combine filters to optimize
 # TODO: Mobile phone support (side bar -> burger menu)
 # TODO: Printing / reader support
 # TODO: Light / dark theme JS?  (requires re-theming)

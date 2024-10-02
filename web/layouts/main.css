@@ -95,6 +95,22 @@ a:active {
   text-decoration: none;
 }
 
+a[href*="//"]::after {
+  mask-image: url(../images/external.svg), linear-gradient(transparent, transparent);
+  mask-position: center center;
+  mask-repeat: no-repeat;
+  content: "";
+  padding-left: 1rem;
+  margin-left: 0.2rem;
+  vertical-align: middle;
+  background: var(--rawLinkColor);
+}
+
+a[href*="//"]:hover::after,
+a[href*="//"]:active::after {
+  background: var(--rawHighlightedLinkColor);
+}
+
 /* ================ NAV ================ */
 
 .NavTitle {
