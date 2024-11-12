@@ -35,6 +35,11 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+      - name: Install mermaid-cli
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.11.0
+        run: npm install -g @mermaid-js/mermaid-cli
       - name: Archive
         run: git archive -o ./web/repo.zip HEAD
       - name: Setup Pages
