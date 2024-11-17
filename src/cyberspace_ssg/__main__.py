@@ -1,11 +1,13 @@
 """Allows execution via cli or python -m."""
 
 import argparse
+import ast
 import logging
+from contextlib import suppress
 from pathlib import Path
+from typing import Any
 
-from . import build, serve
-from .config import logger
+from . import build, config, serve
 
 
 def initialize_logging(log_level: int = logging.DEBUG) -> None:
@@ -35,16 +37,24 @@ def initialize_logging(log_level: int = logging.DEBUG) -> None:
             self._style._fmt = self.color_format.get(record.levelno, self._style._fmt)
             return super().format(record)
 
-    while logger.hasHandlers():  # Remove existing handlers
-        logger.removeHandler(logger.handlers[0])
+    while config.logger.hasHandlers():  # Remove existing handlers
+        config.logger.removeHandler(config.logger.handlers[0])
 
-    logger.setLevel(log_level)
+    config.logger.setLevel(log_level)
     terminal_logger = logging.StreamHandler()
     terminal_logger.setLevel(log_level)
     terminal_logger.setFormatter(
         ColorFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
     )
-    logger.addHandler(terminal_logger)
+    config.logger.addHandler(terminal_logger)
+
+
+def process_define(key_val: str) -> tuple[str, Any]:
+    """Process new definition."""
+    key, has_value, value = key_val.partition("=")
+    with suppress(ValueError, SyntaxError):
+        value = ast.literal_eval(value)
+    return key, value if has_value else True
 
 
 def main() -> None:
@@ -57,6 +67,9 @@ def main() -> None:
     base_parser = argparse.ArgumentParser(add_help=False)
     base_parser.add_argument("-v", "--verbose", action="store_true", help="Displays debug information")
     base_parser.add_argument("-s", "--silent", action="store_true", help="Only display errors")
+    base_parser.add_argument(
+        "-D", "--define", type=process_define, default=[], metavar="key[=value]", action="append", help="Set config"
+    )
 
     # create the parser for the "serve" command
     parser_serve = subparsers.add_parser("serve", help="serve http content", parents=[base_parser])
@@ -66,15 +79,31 @@ def main() -> None:
 
     # create the parser for the "build" command
     parser_build = subparsers.add_parser("build", help="generate html from source", parents=[base_parser])
-    parser_build.add_argument("source", type=Path, nargs="?", default=None, help="The source files path")
-    parser_build.add_argument("html", type=Path, nargs="?", default=None, help="The HTML path / output path")
-    parser_build.add_argument("-p", "--profile", type=Path, default=None, help="The image to use as a profile")
-    parser_build.set_defaults(func=lambda args: build.main(args.source, args.html, args.profile))
+    parser_build.add_argument(
+        "source",
+        type=lambda source: setattr(config, "SOURCE_PATH", Path(source)),
+        nargs="?",
+        default=None,
+        help="The source files path",
+    )
+    parser_build.add_argument(
+        "html",
+        type=lambda source: setattr(config, "WEB_PATH", Path(source)),
+        nargs="?",
+        default=None,
+        help="The HTML path / output path",
+    )
+    parser_build.set_defaults(func=lambda _args: build.main())
 
+    # Initialize config and logging
     args = parser.parse_args()
+    for attribute, value in args.define:
+        setattr(config, attribute, value)
     initialize_logging(
         10 if hasattr(args, "verbose") and args.verbose else 30 if hasattr(args, "silent") and args.silent else 20
     )
+
+    # Run subcommand
     args.func(args)
 
 

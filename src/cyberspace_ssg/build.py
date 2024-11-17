@@ -17,49 +17,34 @@ import dominate.tags as dom
 import dominate.util as dom_util
 import panflute as pf
 
-from . import filters, formats, git
-from .config import CHANGELOG_TEMPLATE, CSS_PATH, IMAGE_PATH, NAV_PATH, PROFILE_IMAGE, SOURCE_PATH, WEB_PATH, logger
-
-# TODO: Git integration
-#   date edited, date created
-# TODO: filters priority
-# TODO: automatic post generation
-# TODO:   RSS / Atom feed
-# TODO: Series TOC (next, prev)
-
-# FIXME: CSS styles (tables, etc.)
-# TODO: combine filters to optimize
-# TODO: Mobile phone support (side bar -> burger menu)
-# TODO: Printing / reader support
-# TODO: Light / dark theme JS?  (requires re-theming)
-# TODO: Highlight current title in sidebar?
-# TODO: compile pdoc to appear on website
-# TODO: strip metadata (exiftool -all= file)
+from . import config, filters, formats, git
+from .cache import cache_miss
+from .config import logger
 
 
 class SiteConstructor:
     """Generate data for use by the site templates."""
 
-    def __new__(cls, source_path: Path, web_path: Path, profile_image: str) -> None:
+    def __new__(cls) -> None:
         """Destroy the instance after initialization."""
         instance = super().__new__(cls)
-        instance.__init__(source_path, web_path, profile_image)
+        instance.__init__()
 
-    def __init__(self, source_path: Path, web_path: Path, profile_image: str) -> None:
-        self.source_path = source_path
-        self.web_path = web_path
-        self.profile_image = profile_image
+    def __init__(self) -> None:
+        self.source_path = config.SOURCE_PATH
+        self.web_path = config.WEB_PATH
+        self.profile_image = config.PROFILE_IMAGE
 
         # Locate all CSS files
         self.css_files = [
-            css_file.relative_to(self.web_path) for css_file in (self.web_path / CSS_PATH).glob("**/*.css")
+            css_file.relative_to(self.web_path) for css_file in (self.web_path / config.CSS_PATH).glob("**/*.css")
         ]
 
         # Locate all top-level source paths
         self.nav_elements = sorted(
             (
                 Path("/") / path.with_suffix("").relative_to(self.source_path)
-                for path in (self.source_path / NAV_PATH).iterdir()
+                for path in (self.source_path / config.NAV_PATH).iterdir()
             ),
             key=lambda path: (path.is_file(), path),
         )
@@ -80,10 +65,13 @@ class SiteConstructor:
         """Convert regular path to changelog path."""
         return file_path.with_stem(f"{file_path.stem}-changelog")
 
-    def convert_source_to_html(self, source_text: str, input_format: str) -> tuple[str, dict[str, Any]]:
+    def convert_source_to_html(
+        self, source_text: str, input_format: str, source_path: Path
+    ) -> tuple[str, dict[str, Any]]:
         """Converts source file to pure html."""
         # Get document tree and apply filters
         document_tree = pf.convert_text(source_text, input_format, standalone=True)
+        document_tree.metadata["path"] = source_path.as_posix()
         for filter_module in self.filter_modules:
             document_tree = filter_module.main(document_tree)
 
@@ -144,7 +132,7 @@ class SiteConstructor:
             )
 
         # Create changelog page
-        changelog_path = Path(__file__).parent / Path(CHANGELOG_TEMPLATE)
+        changelog_path = Path(__file__).parent / Path(config.CHANGELOG_TEMPLATE)
         raw_changelog = Template(changelog_path.read_text("utf-8")).substitute(
             selectors=",\n".join(css_selectors), commit_list=commit_list, diffs=diffs
         )
@@ -153,8 +141,8 @@ class SiteConstructor:
         )
         changelog_file.parent.mkdir(parents=True, exist_ok=True)
         changelog_file.write_text(raw_changelog, "utf-8")
-        input_format = formats.from_extension(Path(CHANGELOG_TEMPLATE).suffix)
-        changelog_html, changelog_metadata = self.convert_source_to_html(raw_changelog, input_format)
+        input_format = formats.from_extension(Path(config.CHANGELOG_TEMPLATE).suffix)
+        changelog_html, changelog_metadata = self.convert_source_to_html(raw_changelog, input_format, changelog_file)
         return changelog_html, changelog_metadata
 
     def generate_page(self, html: str, metadata: dict[str, Any], file_name: Path, changelog: bool = False) -> str:
@@ -175,7 +163,7 @@ class SiteConstructor:
             dom.div(cls="NavBackground")
             with dom.div():
                 with dom.nav():
-                    dom.img(cls="ProfileImage", src=Path("/") / IMAGE_PATH / self.profile_image, alt="Profile Image")
+                    dom.img(cls="ProfileImage", src=config.IMAGE_PATH / self.profile_image)
                     dom.label("Waste of Cyberspace", cls="  NavTitle")
                     dom.hr()
                     for nav_name, nav_path in self.nav_elements.items():
@@ -191,7 +179,7 @@ class SiteConstructor:
                     # Insert banner
                     if banner_name := metadata.get("banner"):
                         with dom.div():
-                            dom.img(cls="Banner", src=Path("/") / IMAGE_PATH / banner_name, alt="Banner")
+                            dom.img(cls="Banner", src=config.IMAGE_PATH / banner_name, alt="Banner")
                     # Insert post
                     with dom.div(cls="Post-parent"):
                         with dom.div(cls="Post"):
@@ -228,9 +216,10 @@ class SiteConstructor:
             article_html, metadata = self.generate_source_changelog(relative_file_path)
             html_path = self.web_path / self.changelog_name(relative_file_path).with_suffix(".html")
         else:
-            source_text = (self.source_path / relative_file_path).read_text("utf-8", errors="ignore")
+            source_path = self.source_path / relative_file_path
+            source_text = source_path.read_text("utf-8", errors="ignore")
             input_format = formats.from_extension(relative_file_path.suffix)
-            article_html, metadata = self.convert_source_to_html(source_text, input_format)
+            article_html, metadata = self.convert_source_to_html(source_text, input_format, source_path)
             html_path = self.web_path / relative_file_path.with_suffix(".html")
         document_html = self.generate_page(article_html, metadata, Path(relative_file_path.name), changelog)
 
@@ -274,9 +263,11 @@ class SiteConstructor:
         with concurrent.futures.ThreadPoolExecutor() as executor:
             for dirpath, _dirnames, filenames in self.source_path.walk():
                 for source_file in filenames:
-                    futures.append(
-                        executor.submit(self.process_file, dirpath.relative_to(self.source_path) / source_file)
-                    )
+                    full_path = dirpath / source_file
+                    if cache_miss(full_path):
+                        futures.append(
+                            executor.submit(self.process_file, dirpath.relative_to(self.source_path) / source_file)
+                        )
 
         # Check for exceptions
         for future in futures:
@@ -286,9 +277,9 @@ class SiteConstructor:
         logger.info(f"Converted {len(futures)} files in {time.perf_counter() - total_start_time:.2f} seconds")
 
 
-def main(source_path: Path | None = None, web_path: Path | None = None, profile_image: str | None = None) -> None:
+def main() -> None:
     """Generate the website."""
-    SiteConstructor(source_path or SOURCE_PATH, web_path or WEB_PATH, profile_image or PROFILE_IMAGE)
+    SiteConstructor()
 
 
 if __name__ == "__main__":

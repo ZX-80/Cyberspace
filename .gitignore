@@ -10,3 +10,4 @@ __pycache__/
 build/
 web/images/Home_server_setup/
 text/pages/projects/Home_server_setup.dj
+build_cache*

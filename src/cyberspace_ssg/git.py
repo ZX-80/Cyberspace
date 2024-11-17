@@ -26,7 +26,7 @@ class Commit:
 
 
 @cache
-def load_git_data() -> dict[Path, list[Commit]]:
+def load_git_data() -> dict[Path, list[tuple[Commit, str]]]:
     """Get all diffs for all commits."""
 
     # Fetch all commits, separated by NUL, filtering for supported extensions

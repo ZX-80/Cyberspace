@@ -15,10 +15,10 @@ WEB_PATH = Path("web")
 CSS_PATH = Path("layouts")
 """The path to all CSS files."""
 
-JS_PATH = Path("scripts")
+JS_PATH = Path("/scripts")
 """The path to any javascript."""
 
-IMAGE_PATH = Path("images")
+IMAGE_PATH = Path("/images")
 """The path to all image files."""
 
 PROFILE_IMAGE = "profile.png"
@@ -26,5 +26,8 @@ PROFILE_IMAGE = "profile.png"
 
 CHANGELOG_TEMPLATE = "changelog_template.dj"
 """Filename for the changelog template."""
+
+INVALIDATION_MODE = "hashing"
+"""The method for invalidating cache."""
 
 logger = logging.getLogger("SSG")
