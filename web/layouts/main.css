@@ -58,14 +58,9 @@
   }
 }
 
-@font-face {
-  font-family: "NunitoSans";
-  src: url("/fonts/NunitoSans-VariableFont_YTLC\,opsz\,wdth\,wght.ttf");
-}
-
 body {
   font-size: 1.05rem;
-  font-family: "NunitoSans";
+  font-family: "NunitoSans", sans-serif;
   color: var(--textColor);
   background-color: var(--articleBGColor);
   margin: 0 auto;

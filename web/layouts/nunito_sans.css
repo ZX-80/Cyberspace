@@ -1,0 +1,23 @@
+/*!
+ *  Nunito Sans typeface https://github.com/googlefonts/NunitoSans
+ *  License: https://github.com/googlefonts/NunitoSans/blob/main/OFL.txt
+ */
+/* FONT PATHS
+ * -------------------------- */
+@font-face {
+    font-family: "NunitoSans";
+    src: url('/fonts/nunito_sans/NunitoSans-Italic-VariableFont.woff2') format('woff2-variations');
+    src: url('/fonts/nunito_sans/NunitoSans-Italic-VariableFont.woff2') format('woff2') tech('variations');
+    font-weight: 200 1000;
+    font-stretch: 75% 125%;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "NunitoSans";
+    src: url('/fonts/nunito_sans/NunitoSans-VariableFont.woff2') format('woff2-variations');
+    src: url('/fonts/nunito_sans/NunitoSans-VariableFont.woff2') format('woff2') tech('variations');
+    font-weight: 200 1000;
+    font-stretch: 75% 125%;
+    font-style: normal;
+}
