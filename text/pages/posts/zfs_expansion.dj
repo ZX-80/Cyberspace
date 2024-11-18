@@ -3,24 +3,8 @@
 }
 
 {.post-title}
-# ZFS Calculatorss
+# ZFS Calculators
 
----
-
-:::: side-by-side
-
-# ZFS Calculators 
-
-{.post-date}
-:::
-
-[Nov 17, 2024]{title="2024-09-15T22:08:52-04:00"}
-
-[Modified Sep 04, 2025]{title="2025-09-15T22:08:52-04:00"}
-
-:::
-
-::::
 ---
 
 A collection of calculators from around the web, for the [ZFS](https://en.wikipedia.org/wiki/ZFS?useskin=vector) filesystem. This 
