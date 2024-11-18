@@ -14,7 +14,7 @@ was mainly done to preserve them in one place, and to experiment with using [PyS
 If you don't know much about ZFS, or need to brush up on your knowledge, ["OpenZFS: the final word in file 
 systems"](https://jro.io/truenas/openzfs/) by Jason Rose is a fantastic introduction.
 
-`<br>`{=html}
+\
 
 ## RAIDZ Expansion
 

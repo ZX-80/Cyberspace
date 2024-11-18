@@ -335,6 +335,11 @@ article {
   background-color: var(--postColor);
 }
 
+.post-date p {
+  text-align: right;
+  margin: 0;
+}
+
 /* Table of contents in post */
 .Post .toc {
   padding: 0.5rem;
@@ -358,6 +363,30 @@ article {
 
 .Post .toc li {
   list-style-type: none;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.17rem;
+}
+
+h4 {
+  font-size: 1rem;
+}
+
+h5 {
+  font-size: 0.83rem;
+}
+
+h6 {
+  font-size: 0.67rem;
 }
 
 h1,

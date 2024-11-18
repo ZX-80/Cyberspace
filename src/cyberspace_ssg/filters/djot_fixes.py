@@ -1,4 +1,12 @@
 """
+Some djot inputs don't translate correctly.
+
+# Line breaks
+
+Lone backslashes are not converted to line breaks.
+
+# Checkboxes
+
 Detect checkboxes. Pandoc should convert them, but it doesn't. Example usage:
 
 - [ ] not done
@@ -46,9 +54,20 @@ def convert_checkbox(elem: pf.Element, _doc: pf.Doc) -> pf.Plain | None:
     return None
 
 
+def convert_linebreak(elem: pf.Element, _doc: pf.Doc) -> pf.Para | None:
+    """Convert backslash into line break."""
+    if (
+        isinstance(elem, pf.Para)
+        and isinstance(len(elem.content) == 1 and (linebreak := elem.content[0]), pf.Str)
+        and linebreak.text == "\\"
+    ):
+        return pf.Para(pf.LineBreak())
+    return None
+
+
 def main(doc: pf.Doc | None = None) -> pf.Doc | None:
     """Run actions."""
-    return pf.run_filters([style_task_list, convert_checkbox], doc=doc)
+    return pf.run_filters([style_task_list, convert_checkbox, convert_linebreak], doc=doc)
 
 
 if __name__ == "__main__":

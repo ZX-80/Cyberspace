@@ -60,7 +60,6 @@ def cache_miss(file_path: Path | str) -> bool:
     cache_metadata = cache_database.get(str(file_path))
     if cache_metadata and cache_metadata == file_metadata:  # Hit
         logger.info(f"No work for {file_path}")
-        logger.debug(f"{cache_database[str(file_path)]}")
         return False
 
     # Miss, update cache

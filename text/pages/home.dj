@@ -38,11 +38,12 @@ if I could turn simple documents like djot into HTML I might as well fix up my o
 
   - Easily extensible via filters
 
-    - [Mermaid JS](https://mermaid.js.org/) charts
+    - [Mermaid JS](https://mermaid.js.org/) charts (with support for [mermaid-cli](https://github.com/mermaid-js/mermaid-cli))
     - GitHub style [alerts](https://github.com/orgs/community/discussions/16925)
     - Syntax highlighting (580+ languages)
     - Tabs
     - Table of contents (TOC)
+    - [PyScript](https://pyscript.net/) (script in Python instead of JavaScript)
   - [MathML](https://developer.mozilla.org/en-US/docs/Web/MathML) support
   - Uses git to manage created / edited dates and changelog
   - Page metadata
@@ -56,6 +57,9 @@ To speed up development, I've made use of some other libraries:
 - [Pandoc](https://pandoc.org/): Document to HTML conversion
 - [Panflute](https://github.com/sergiocorreia/panflute): Easy editing of pandoc documents
 - [dominate](https://github.com/Knio/dominate/tree/master): HTML templating in Python
+- [Mermaid JS](https://mermaid.js.org/): Chart templates
+- [Mermaid-CLI](https://github.com/mermaid-js/mermaid-cli): Converts mermaid charts to SVG
+- [PyScript](https://pyscript.net/): Browser scripting with Python
 
 ### Building
 
