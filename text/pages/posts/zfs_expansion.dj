@@ -1,0 +1,167 @@
+:{#metadata
+  banner="zfs_hierarchy.png"
+}
+
+{.post-title}
+# ZFS Calculatorss
+
+---
+
+:::: side-by-side
+
+# ZFS Calculators 
+
+{.post-date}
+:::
+
+[Nov 17, 2024]{title="2024-09-15T22:08:52-04:00"}
+
+[Modified Sep 04, 2025]{title="2025-09-15T22:08:52-04:00"}
+
+:::
+
+::::
+---
+
+A collection of calculators from around the web, for the [ZFS](https://en.wikipedia.org/wiki/ZFS?useskin=vector) filesystem. This 
+was mainly done to preserve them in one place, and to experiment with using [PyScript](https://pyscript.net/)
+(allows python to be used for browser scripting instead of javascript).
+
+If you don't know much about ZFS, or need to brush up on your knowledge, ["OpenZFS: the final word in file 
+systems"](https://jro.io/truenas/openzfs/) by Jason Rose is a fantastic introduction.
+
+`<br>`{=html}
+
+## RAIDZ Expansion
+
+---
+
+The latest TrueNAS ([Electric-Eel / 24.10](https://www.truenas.com/docs/scale/24.10/gettingstarted/scalereleasenotes/))
+now supports RAIDZ expansion, which allows you to append disks to an existing
+vdev. This allows you to extend you're vdevs over time, rather than having to erase the vdev, create a new one, and
+restore from backup. It has one small caveat however, which is that the existing data still uses the data-to-parity
+ratio and block width of the old vdev size. This effectively means that you don't get the full capacity of your
+drives until that existing data is rewritten.
+
+This calculator allows you to determine how much space is lost compared to creating a new vdev from scratch.
+
+> Credit: based on the TrueNas calculator at <https://www.truenas.com/docs/references/extensioncalculator>, which in turn
+is based on [this spreadsheet](https://docs.google.com/spreadsheets/d/1qiDPfLN-K88FMHMxcgtkxswY5Wtu7h9tBAOgJfnO7VE).
+
+---
+
+:::: side-by-side
+
+:::
+
+```=html
+    <label style="display: block">
+      <span style="display: inline-block; width: 19rem;">Drive Size (TB):</span>
+      <input type="text" id="drive_size_input" style="width: 6rem;" />
+    </label>
+    <label style="display: block">
+      <span style="display: inline-block; width: 19rem;">RAIDZ Level / Number of Parity Disks:</span>
+      <select id="raidz_level_input" style="width: 6rem;">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+      </select>
+    </label>
+    <label style="display: block">
+      <span style="display: inline-block; width: 19rem;">Data Expansion Threshold (%):</span>
+    <input type="text" id="expansion_input" style="width: 6rem;" />
+    </label>
+    <label style="display: block">
+      <span style="display: inline-block; width: 19rem;">Initial Number of Drives:</span>
+    <input type="text" id="initial_input" style="width: 6rem;" />
+    </label>
+    <label style="display: block">
+      <span style="display: inline-block; width: 19rem;">Final Number of Drives:</span>
+    <input type="text" id="final_input" style="width: 6rem;" />
+    </label>
+    <br>
+    <button mpy-click="calculate">Calculate</button>
+```
+
+:::
+
+:::
+
+```=html
+    <b>Extend VDEV to final width all at once</b>
+
+    <label style="display: block; padding-left: 2rem">
+      <span style="display: inline-block; width: 19rem;">Total capacity lost:</span>
+      <span id="total_capacity_recovered">0%</span>
+    </label>
+
+    <label style="display: block; padding-left: 2rem">
+      <span style="display: inline-block; width: 19rem;">Capacity lost:</span>
+      <span id="capacity_recovered">0 TB</span>
+    </label>
+
+    <label style="display: block; padding-left: 2rem">
+      <span style="display: inline-block; width: 19rem;">Capacity lost in drives:</span>
+      <span id="drives_worth_recovered">0 Drives</span>
+    </label>
+
+    <b>Extend VDEV one drive at a time</b>
+
+    <label style="display: block; padding-left: 2rem">
+      <span style="display: inline-block; width: 19rem;">Total capacity lost:</span>
+      <span id="total_capacity_recovered_compound">0%</span>
+    </label>
+
+    <label style="display: block; padding-left: 2rem">
+      <span style="display: inline-block; width: 19rem;">Capacity lost:</span>
+      <span id="capacity_recovered_compound">0 TB</span>
+    </label>
+
+    <label style="display: block; padding-left: 2rem">
+      <span style="display: inline-block; width: 19rem;">Capacity lost in drives:</span>
+      <span id="drives_worth_recovered_compound">0 Drives</span>
+    </label>
+```
+
+:::
+
+::::
+
+```=pyscript
+
+    from pyscript import document
+
+    def calculate(event):
+        drive_size = int(document.querySelector("#drive_size_input").value)
+        raidz_level = int(document.querySelector("#raidz_level_input").value)
+        expansion = float(document.querySelector("#expansion_input").value)
+        initial_drives = int(document.querySelector("#initial_input").value)
+        final_drives = int(document.querySelector("#final_input").value)
+
+        expansionPercent = expansion / 100
+        percentage_decrease = (final_drives-initial_drives) / final_drives
+        drives_worth_recovered = expansionPercent * raidz_level * percentage_decrease
+        capacity_recovered = drive_size * drives_worth_recovered
+        total_capacity_recovered = drives_worth_recovered / final_drives
+
+        l = 0
+        for i in range(initial_drives + 1, final_drives + 1):
+            l += 1 / i
+        drives_worth_recovered_compound = expansionPercent * raidz_level * l
+        capacity_recovered_compound = drive_size * drives_worth_recovered_compound
+        total_capacity_recovered_compound = drives_worth_recovered_compound / final_drives
+        
+        span = document.querySelector("#capacity_recovered")
+        span.innerText = f"{capacity_recovered:.2f} TB"
+        span = document.querySelector("#drives_worth_recovered")
+        span.innerText = f"{drives_worth_recovered:.2f} Drives"
+        span = document.querySelector("#total_capacity_recovered")
+        span.innerText = f"{total_capacity_recovered:.2%}"
+
+        span = document.querySelector("#capacity_recovered_compound")
+        span.innerText = f"{capacity_recovered_compound:.2f} TB"
+        span = document.querySelector("#drives_worth_recovered_compound")
+        span.innerText = f"{drives_worth_recovered_compound:.2f} Drives"
+        span = document.querySelector("#total_capacity_recovered_compound")
+        span.innerText = f"{total_capacity_recovered_compound:.2%}"
+```
