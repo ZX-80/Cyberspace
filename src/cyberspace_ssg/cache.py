@@ -1,6 +1,6 @@
 """Manage file cache. A shelf is used to simplify use."""
 
-import shelve
+import csv
 from enum import Enum, member
 from functools import cache
 from hashlib import blake2b
@@ -9,7 +9,8 @@ from pathlib import Path
 from . import config
 from .config import logger
 
-CACHE_NAME = "build_cache"
+CACHE_FILE = Path("build_cache.csv")
+type CacheDatabase = dict[Path, str]
 
 
 class InvalidationMode(Enum):
@@ -42,9 +43,21 @@ class InvalidationMode(Enum):
 
 
 @cache
-def load_cache() -> dict:
+def load_cache() -> CacheDatabase:
     """Load cache file once."""
-    return shelve.open(CACHE_NAME)
+    try:
+        with open(CACHE_FILE, mode="r+", newline="", encoding="utf-8") as csv_file:
+            return {row[0]: row[1] for row in csv.reader(csv_file)}
+    except FileNotFoundError:
+        return {}
+
+
+def sync_cache(database: CacheDatabase) -> None:
+    """Write cache back to file."""
+    with open(CACHE_FILE, mode="w", newline="", encoding="utf-8") as csv_file:
+        csv_writer = csv.writer(csv_file)
+        for path, data in database.items():
+            csv_writer.writerow([path, data])
 
 
 def cache_miss(file_path: Path | str) -> bool:
@@ -63,6 +76,6 @@ def cache_miss(file_path: Path | str) -> bool:
         return False
 
     # Miss, update cache
-    cache_database[str(file_path)] = file_metadata
-    cache_database.sync()
+    cache_database[file_path] = file_metadata
+    sync_cache(cache_database)
     return True
