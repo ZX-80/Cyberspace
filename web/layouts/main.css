@@ -169,6 +169,10 @@ h3.sidebar {
 
 /* ================ ARTICLE ================ */
 
+caption {
+  caption-side: bottom;
+}
+
 .index-list input[type="radio"] {
   appearance: none;
   display: none;
@@ -333,6 +337,12 @@ article {
   /* padding: 1rem 3rem 1rem 3rem; */
   margin-top: 1rem;
   background-color: var(--postColor);
+}
+
+.post-date {
+  display: flex;
+  align-items: center;
+  justify-content: right;
 }
 
 .post-date p {

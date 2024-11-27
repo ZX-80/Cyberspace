@@ -13,10 +13,13 @@ from ..config import SOURCE_PATH, logger
 from ..formats import from_extension
 from .macros import macro_check
 
+# TODO: support inline includes
+
 
 def include_action(elem: pf.Element, _doc: pf.Doc) -> Any | list[None] | None:
     """Insert a file where elem is."""
-    if (span := macro_check(elem)) and span.identifier.lower() == "include":
+    if (span_inline := macro_check(elem)) and span_inline[0].identifier.lower() == "include" and not span_inline[1]:
+        span, _ = span_inline
         if "path" not in span.attributes:
             logger.error("Include macro has no path attribute.")
             return []

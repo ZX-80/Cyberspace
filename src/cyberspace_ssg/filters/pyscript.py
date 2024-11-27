@@ -44,9 +44,16 @@ def expand_pyscript(elem: pf.Element, doc: pf.Doc) -> None:
         ).render()
 
 
+def finalize(doc: pf.Doc) -> None:
+    """Clean up metadata."""
+    doc.metadata.pop("found_title", None)
+
+
 def main(doc: pf.Doc | None = None) -> pf.Doc | None:
     """Run actions."""
-    return pf.run_filter(expand_pyscript, doc=doc)
+    return pf.run_filter(expand_pyscript, finalize=finalize, doc=doc)
+    # del doc.metadata["core_imported"]
+    # return doc
 
 
 if __name__ == "__main__":

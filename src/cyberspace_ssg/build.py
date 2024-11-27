@@ -17,8 +17,7 @@ import dominate.tags as dom
 import dominate.util as dom_util
 import panflute as pf
 
-from . import config, filters, formats, git
-from .cache import cache_miss
+from . import cache, config, filters, formats, git
 from .config import logger
 
 
@@ -74,6 +73,14 @@ class SiteConstructor:
         document_tree.metadata["path"] = source_path.as_posix()
         for filter_module in self.filter_modules:
             document_tree = filter_module.main(document_tree)
+        del document_tree.metadata["path"]
+
+        # Save metadata
+        metadata = {key: document_tree.get_metadata(key) for key in document_tree.metadata}
+        cache_database = cache.load_cache()
+        if source_path in cache_database:
+            cache_database[source_path].metadata = metadata
+        cache.sync_cache(cache_database)
 
         # Return HTML and metadata
         html = pf.convert_text(
@@ -82,7 +89,7 @@ class SiteConstructor:
             output_format="html",
             extra_args=["--no-highlight", "--mathml"],
         )
-        return html, {key: document_tree.get_metadata(key) for key in document_tree.metadata}
+        return html, metadata
 
     def generate_source_changelog(self, relative_file_path: Path) -> tuple[str, dict[str, Any]]:
         """Construct a changelog page."""
@@ -256,25 +263,28 @@ class SiteConstructor:
     def batch_process_files(self) -> None:
         """Convert all files in source path."""
         total_start_time = time.perf_counter()
-        futures = []
         git.load_git_data()
 
         # Spawn threads
+        futures: dict[Path, concurrent.futures.Future] = {}
         with concurrent.futures.ThreadPoolExecutor() as executor:
             for dirpath, _dirnames, filenames in self.source_path.walk():
                 for source_file in filenames:
                     full_path = dirpath / source_file
-                    if cache_miss(full_path):
-                        futures.append(
-                            executor.submit(self.process_file, dirpath.relative_to(self.source_path) / source_file)
-                        )
+                    futures[full_path] = (
+                        executor.submit(self.process_file, dirpath.relative_to(self.source_path) / source_file)
+                        if cache.cache_miss(full_path)
+                        else None
+                    )
+            config.futures |= futures
 
-        # Check for exceptions
-        for future in futures:
-            if exception := future.exception():
-                logger.error("".join(traceback.format_exception(exception)))
+            # Check for exceptions
+            processed_files = [future for future in config.futures.values() if future]
+            for future in concurrent.futures.as_completed(processed_files):
+                if exception := future.exception():
+                    logger.error("".join(traceback.format_exception(exception)))
 
-        logger.info(f"Converted {len(futures)} files in {time.perf_counter() - total_start_time:.2f} seconds")
+        logger.info(f"Converted {len(processed_files)} files in {time.perf_counter() - total_start_time:.2f} seconds")
 
 
 def main() -> None:

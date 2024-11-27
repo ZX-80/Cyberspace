@@ -49,7 +49,7 @@ def detect_mermaid(elem: pf.Element, doc: pf.Doc) -> pf.RawBlock | None:
 
 def finalize(doc: pf.Doc) -> None:
     """Insert mermaid script if necessary"""
-    if doc.metadata.get("mermaid"):
+    if doc.metadata.pop("mermaid", None):
         doc.content.append(
             pf.RawBlock(str(dom.script(src=JS_PATH / "mermaid_js" / "mermaid.esm.min.mjs", type="module")))
         )

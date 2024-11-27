@@ -1,6 +1,7 @@
 """Contains common configurations for the package."""
 
 import logging
+from concurrent.futures import Future
 from pathlib import Path
 
 SOURCE_PATH = Path("text")
@@ -8,6 +9,9 @@ SOURCE_PATH = Path("text")
 
 NAV_PATH = Path("pages")
 """The path to document files for the navigation bar."""
+
+POST_PATH = SOURCE_PATH / NAV_PATH / "posts"
+"""The path to find all posts."""
 
 WEB_PATH = Path("web")
 """The path to all website related files. Also serves as an output path for html/css generation."""
@@ -30,4 +34,9 @@ CHANGELOG_TEMPLATE = "changelog_template.dj"
 INVALIDATION_MODE = "hashing"
 """The method for invalidating cache."""
 
+# Some globally shared WORM (write once, read many) variables
 logger = logging.getLogger("SSG")
+"""Used for console output."""
+
+futures: dict[Path, Future] = {}
+"""A mapping of all the files being processed."""

@@ -1,16 +1,32 @@
 """Manage file cache. A shelf is used to simplify use."""
 
 import csv
+import json
+from dataclasses import dataclass, field
 from enum import Enum, member
 from functools import cache
 from hashlib import blake2b
 from pathlib import Path
+from typing import Any
 
 from . import config
 from .config import logger
 
 CACHE_FILE = Path("build_cache.csv")
-type CacheDatabase = dict[Path, str]
+
+
+@dataclass
+class CacheData:
+    """The data cached during a build."""
+
+    file_hash: str
+    """A hash to detect file modifications."""
+
+    metadata: dict[str, Any] = field(default_factory=dict)
+    """The document metadata."""
+
+
+type CacheDatabase = dict[Path, CacheData]
 
 
 class InvalidationMode(Enum):
@@ -47,7 +63,7 @@ def load_cache() -> CacheDatabase:
     """Load cache file once."""
     try:
         with open(CACHE_FILE, mode="r+", newline="", encoding="utf-8") as csv_file:
-            return {row[0]: row[1] for row in csv.reader(csv_file)}
+            return {Path(row[0]): CacheData(row[1], json.loads(row[2])) for row in csv.reader(csv_file)}
     except FileNotFoundError:
         return {}
 
@@ -56,26 +72,25 @@ def sync_cache(database: CacheDatabase) -> None:
     """Write cache back to file."""
     with open(CACHE_FILE, mode="w", newline="", encoding="utf-8") as csv_file:
         csv_writer = csv.writer(csv_file)
-        for path, data in database.items():
-            csv_writer.writerow([path, data])
+        for path, cache_data in database.items():
+            csv_writer.writerow([path, cache_data.file_hash, json.dumps(cache_data.metadata)])
 
 
-def cache_miss(file_path: Path | str) -> bool:
+def cache_miss(file_path: Path) -> bool:
     """Check if a file is cached and valid."""
 
-    # Calculate expected metadata
+    # Calculate expected hash
     cache_mode = InvalidationMode[config.INVALIDATION_MODE]
-    file_path = Path(file_path)  # Convert to path
-    file_metadata = cache_mode(file_path)
+    file_hash = cache_mode(file_path)
 
     # Check for cache hit
     cache_database = load_cache()
-    cache_metadata = cache_database.get(str(file_path))
-    if cache_metadata and cache_metadata == file_metadata:  # Hit
+    cache_data = cache_database.get(file_path)
+    if cache_data and cache_data.file_hash == file_hash:  # Hit
         logger.info(f"No work for {file_path}")
         return False
 
     # Miss, update cache
-    cache_database[file_path] = file_metadata
+    cache_database[file_path] = CacheData(file_hash)
     sync_cache(cache_database)
     return True
