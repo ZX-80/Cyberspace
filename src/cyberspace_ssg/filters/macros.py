@@ -206,7 +206,6 @@ def macro_action(elem: pf.Element, doc: pf.Doc) -> pf.RawBlock | list[None] | No
 def finalize(doc: pf.Doc) -> None:
     """Save the short toc to metadata for later use."""
     doc.metadata["toc"] = doc.json_toc
-    print(doc.json_toc)
 
 
 def main(doc: pf.Doc | None = None) -> pf.Doc | None:

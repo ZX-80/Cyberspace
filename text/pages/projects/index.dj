@@ -1,138 +1,122 @@
 # Projects
 
-An index for all the projects I'm working on. Click the titles to see their respective project pages.
+An index for various projects.
+
+---
+
+{.project-table}
+| Projects                    | Status                | Group     | Description                                                                          |
+|-----------------------------|-----------------------|-----------|--------------------------------------------------------------------------------------|
+| [ArduinoMDADriver][]        | :evergreen_tree: Done |           | Arduino IBM Monochrome Display Adapter (MDA) library.                                |
+| Atoms (GBA)                 | :evergreen_tree: Done | Game      | A GBA port of "Atoms" created by B Hewlett.                                          |
+| [Channel-F-Cart-Dumper][]   | :evergreen_tree: Done | Channel F | Allows you to pull software from a Channel F cartridge.                              |
+| Digital Piano               | :evergreen_tree: Done |           | Plays songs from text files from [pianoletternotes][].                               |
+| Email Games                 | :evergreen_tree: Done | Games     | Players can play various games via email (chess, checkers, etc.)                     |
+| FM-API                      | :evergreen_tree: Done |           | Converts files to audio and back (for cassette storage).                             |
+| [Fn-Remapper][]             | :evergreen_tree: Done |           | GUI for remapping Lenovo Thinkpad X1 Extreme Gen 5 Function keys.                    |
+| Forum File Uploader         | :evergreen_tree: Done |           | Converts files to post text for storage on forums.                                   |
+| [HomeLab][]                 | :evergreen_tree: Done |           | My home server setup.                                                                |
+| [METAR Map][]               | :evergreen_tree: Done |           | A [METAR map][] of my home state, Florida.                                           |
+| [Multi-Menu][]              | :evergreen_tree: Done | Channel F | The main navigation screen of the Flashcart-Pi for the Channel F.                    |
+| NCDU to WizTree             | :evergreen_tree: Done |           | A conversion tool to allow [WizTree][] to import output from an [NCDU][] scan.       |
+| [Nim-Dictionary][]          | :evergreen_tree: Done |           | A terminal dictionary written in [Nim][].                                            |
+| [NTSB-Bot][]                | :evergreen_tree: Done |           | Generates and uploads summary reports from the NTSB aviation accident database.      |
+| Portal Terminal Songs       | :evergreen_tree: Done |           | The ending songs to portal, playing in the terminal with ascii animations.           |
+| [SNES2ChannelF][]           | :evergreen_tree: Done | Channel F | Interfaces a SNES controller with a Channel F.                                       |
+| [Static Site Generator][]   | :seedling: Active     |           | The static site generator used to produce this site.                                 |
+| XBOX Modding                | :seedling: Active     |           | Upgrading my old XBOX.                                                               |
+| Galactic Conflict           | :chestnut: Inactive   | Game      | A terminal game based on the play-by-mail "Galactic Conflict".                       |
+| Homebrew CPU                | :chestnut: Inactive   |           | A series of homebrew CPUs I've designed over the years.                              |
+| Pascal Compiler             | :chestnut: Inactive   | Channel F | A compiler for a [Pascal][] language on the Channel F, Epoch, and x86.               |
+| [PicoVideocart][]           | :chestnut: Inactive   | Channel F | A [Fairchild Channel F][] [flashcart][], powered by a Raspberry Pi Pico / Teensy 4.  |
+| VGA / MDA circuit           | :chestnut: Inactive   |           | A serial device that takes ascii text and displays it on a [VGA][] / [MDA][] screen. |
+| [Videocart-Image-Format][]  | :chestnut: Inactive   | Channel F | A Fairchild Channel F game format based on the CCS64 emulator [Cartridge Image][].   |
 
 :::: side-by-side
 
 :::
 
-## In-Progress
+## :thought_balloon: Ideas
 
 ---
 
-{.index-list}
-- [{=Galactic Conflict=}]()
-- A terminal game based on the play-by-mail "Galactic Conflict".
-
-{.index-list}
-- [{=Epoch Game Pocket Flashcart=}]()
-- A flashcart for the first handheld console to have cartridges, the [Epoch Game Pocket][].
-
-[Epoch Game Pocket]: https://en.wikipedia.org/wiki/Epoch_Game_Pocket_Computer
-
-{.index-list}
-- [{=yt-dlp Jellyfin Support=}]()
-- Allows you to use [Jellyfin][] for viewing yt-dlp downloads.
-
-[Jellyfin]: https://jellyfin.org/
-
-{.index-list}
-- [{=VGA / MDA circuit=}]()
-- A serial device that takes ascii text and displays it on a [VGA][] / [MDA][] screen.
-
-[VGA]: https://en.wikipedia.org/w/index.php?title=Video_Graphics_Array
-[MDA]: https://en.wikipedia.org/wiki/IBM_Monochrome_Display_Adapter
-
-{.index-list}
-- [{=Homebrew CPU=}]()
-- A series of homebrew CPUs I've designed over the years.
-
-{.index-list}
-- [{=Pascal Compiler=}]()
-- A compiler for a [Pascal][] language on the Channel F, Epoch, and x86.
-
-[Pascal]: https://en.wikipedia.org/wiki/Pascal_(programming_language)
-
-### Channel F
-
-{.index-list}
-- [{=PicoVideocart=}](https://github.com/ZX-80/PicoVideocart)
-- This [flash Videocart][], powered by a Raspberry Pi Pico / Teensy 4, allows games to be loaded from an SD card and played
-on a real [Fairchild Channel F][]. It supports both official games, and homebrew. This project is currently in development.
-
-[flash Videocart]: https://en.wikipedia.org/wiki/Flash_cartridge
-[Fairchild Channel F]: https://en.wikipedia.org/wiki/Fairchild_Channel_F
-
-{.index-list}
-- [{=Videocart-Image-Format=}](https://github.com/ZX-80/Videocart-Image-Format)
-- A file format to store games made for the Fairchild Channel F. Based on the [Cartridge Image][] format from the CCS64 
-emulator.
-
-[Cartridge Image]: http://unusedino.de/ec64/technical/formats/crt.html
+{.project-table}
+| Projects               | Description                                      |
+|------------------------|--------------------------------------------------|
+| Channel F Clone        | Build a Channel F computer from modern parts.    |
+| Chip-8 Emulator        | See [Chip-8][].                                  |
+| Custom Filesystem      | Explore various filesystem implementations.      |
+| Disc Manager           | A tape manager for discs.                        |
+| Firearm Laser Training | Mark shots from a dry-fire laser using a camera. |
+| Games                  | Various video game ideas.                        |
+| MSX1/2 Clone           | Build an MSX computer from modern parts.         |
+| Pokekon Flashcart      | Play [Pokekon][] games from an SD card.          |
+| Terminal Bookmarks     | Bookmark directories.                            |
+| Thermal Typewriter     | Thermal printer + keyboard.                      |
+| yt-dlp Jellyfin Plugin | Use [Jellyfin][] to view yt-dlp downloads.       |
+| ZX81 Expansion Port    | Build some addons for the ZX-81.                 |
 
 :::
 
 :::
 
-## Completed
+## :headstone: Abandoned
 
 ---
 
-{.index-list}
-- [{=Home Servers=}](Home_server_setup)
-- Documentation about my home servers.
-
-{.index-list}
-- [{=Static Site Generator=}](https://github.com/ZX-80/Cyberspace)
-- The static site generator used to produce this site.
-
-{.index-list}
-- [{=Portal Terminal Songs=}]()
-- The ending songs to portal, playing in the terminal with ascii animations.
-
-{.index-list}
-- [{=NCDU to WizTree=}]()
-- A conversion tool to allow [WizTree][] to import output from an [NCDU][] scan.
-
-[WizTree]: https://diskanalyzer.com/
-[NCDU]: https://dev.yorhel.nl/ncdu
-
-{.index-list}
-- [{=Atoms (GBA)=}]()
-- A GBA port of the game "Atoms", created by Tom Kuhn for the Amiga 500 in 1993 (based on the 1989 Atari ST version by B Hewlett).
-
-{.index-list}
-- [{=Fn-Remapper=}](https://github.com/ZX-80/Fn-Remapper)
-- A simple GUI to allow remapping Function keys on the Lenovo Thinkpad X1 Extreme Gen 5.
-
-{.index-list}
-- [{=Nim-Dictionary=}](https://github.com/ZX-80/Nim-Dictionary)
-- A terminal dictionary written in [Nim][].
-
-[Nim]: https://nim-lang.org/
-
-{.index-list}
-- [{=METAR Map=}]()
-- A [METAR map][] of my home state, Florida.
-
-[METAR map]: https://metarmaps.com/
-
-{.index-list}
-- [{=NTSB-Bot=}](https://github.com/ZX-80/NTSB-Bot)
-- Produces summary reports from the NTSB aviation accident database and uploads them online using Python, SQL, and Markdown.
-
-{.index-list}
-- [{=ArduinoMDADriver=}](https://github.com/ZX-80/ArduinoMDADriver)
-- This is a modified version of Christophe Diericxs [CGA library][], designed to work on IBM Monochrome Display Adapter 
-(MDA) monitors. It allows an Arduino (UNO) to directly drive an MDA monitor at a 104x115 resolution, without any 
-additional hardware.
-
-[CGA library]: https://github.com/christophediericx/ArduinoCGADriver
-
-### Channel F
-
-{.index-list}
-- [{=Multi-Menu=}](https://github.com/ZX-80/Multi-Menu)
-- The main navigation screen of the Flashcart-Pi for the Channel F.
-
-{.index-list}
-- [{=Channel-F-Cart-Dumper=}](https://github.com/ZX-80/Channel-F-Cart-Dumper)
-- Allows you to pull software from a Channel F cartridge.
-
-{.index-list}
-- [{=SNES2ChannelF=}](https://github.com/ZX-80/SNES2ChannelF)
-- Interfaces a SNES controller with a Channel F.
+{.project-table}
+| Projects             | Description                                      |
+|----------------------|--------------------------------------------------|
+| F-Forth              | A forth implementation for the Channel F.        |
+| Nim-TFTP             | An implementation of [TFTP][] in Nim.            |
+| Tag Filesystem       | Based on tagging (think sets) instead of a tree. |
+| Terminal Text Editor | An enhanced nano-like text editor.               |
+| Typewriter OS        | An OS purely for text editing.                   |
 
 :::
 
 ::::
+
+
+{% Project Homepages %}
+[Static Site Generator]: https://github.com/ZX-80/Cyberspace
+[Fn-Remapper]: https://github.com/ZX-80/Fn-Remapper
+[Nim-Dictionary]: https://github.com/ZX-80/Nim-Dictionary
+[METAR Map]: https://github.com/ZX-80/METAR-Map
+[NTSB-Bot]: https://github.com/ZX-80/NTSB-Bot
+[ArduinoMDADriver]: https://github.com/ZX-80/ArduinoMDADriver
+[Multi-Menu]: https://github.com/ZX-80/Multi-Menu
+[Channel-F-Cart-Dumper]: https://github.com/ZX-80/Channel-F-Cart-Dumper
+[SNES2ChannelF]: https://github.com/ZX-80/SNES2ChannelF
+
+[PicoVideocart]: https://github.com/ZX-80/PicoVideocart
+[Videocart-Image-Format]: https://github.com/ZX-80/Videocart-Image-Format
+
+{% Description Links %}
+[Nim]: https://nim-lang.org/
+[METAR map]: https://metarmaps.com/
+[CGA library]: https://github.com/christophediericx/ArduinoCGADriver
+[WizTree]: https://diskanalyzer.com/
+[NCDU]: https://dev.yorhel.nl/ncdu
+[pianoletternotes]: https://pianoletternotes.blogspot.com/
+
+[Pokekon]: https://en.wikipedia.org/wiki/Epoch_Game_Pocket_Computer
+[Jellyfin]: https://jellyfin.org/
+[VGA]: https://en.wikipedia.org/w/index.php?title=Video_Graphics_Array
+[MDA]: https://en.wikipedia.org/wiki/IBM_Monochrome_Display_Adapter
+[Pascal]: https://en.wikipedia.org/wiki/Pascal_(programming_language)
+[flashcart]: https://en.wikipedia.org/wiki/Flash_cartridge
+[Fairchild Channel F]: https://en.wikipedia.org/wiki/Fairchild_Channel_F
+[Cartridge Image]: http://unusedino.de/ec64/technical/formats/crt.html
+[TFTP]: https://en.wikipedia.org/wiki/Trivial_File_Transfer_Protocol
+
+[Chip-8]: https://en.wikipedia.org/wiki/CHIP-8
+
+{% Use Christmas trees in December %}
+```=javascript
+if (new Date().getMonth() === 11) {
+    document.querySelectorAll(".emoji[data-emoji='evergreen_tree']").forEach((tree) => {
+        tree.textContent = "\uD83C\uDF84";
+    });
+}
+```
