@@ -37,6 +37,26 @@
         <div class="Post-parent">
           <div class="Post">
 
+		  [<br/>
+		  <xsl:for-each select= "/atom:feed/atom:entry[generate-id()=generate-id(key('groupByMonth', substring(atom:published,6,2)))]">
+			<!-- <xsl:variable name="Shipment" select="key('groupByMonth', substring(atom:published,6,2))"/> -->
+			"<xsl:value-of select="atom:title"/>"-<xsl:value-of select="substring(atom:published,6,2)"/>
+			<xsl:variable name="month_u" select="substring(atom:published,6,2)"/>
+			    <h3><xsl:value-of select="$month_u"/></h3>
+			<xsl:for-each select="/atom:feed/atom:entry[substring(atom:published,6,2)=$month_u]">
+				<!-- <xsl:if test="substring(atom:published,6,2) = $month_u"> -->
+					TITLE: <xsl:value-of select="atom:title"/><br/>
+				<!-- </xsl:if> -->
+			</xsl:for-each>
+			<br/>
+			<!-- <xsl:value-of select="$Shipment/atom:title"/> -->
+			<!-- <xsl:for-each select="$Shipment">
+				<xsl:value-of select="$Shipment"/>
+				<hr/>
+			</xsl:for-each> -->
+		  </xsl:for-each>
+		  ]<br/>
+
 		  [
 		  <xsl:for-each select= "/atom:feed/atom:entry[generate-id()=generate-id(key('groupByMonth', substring(atom:published,6,2)))]">
 			<!-- <xsl:variable name="Shipment" select="key('groupByMonth', substring(atom:published,6,2))"/> -->
