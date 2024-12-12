@@ -22,6 +22,8 @@ def find_first_header(elem: pf.Element, doc: pf.Doc) -> pf.Div | None:
     ):
         doc.metadata["found_title"] = True
         doc.metadata["title"] = doc.get_metadata("title", string.text)
+
+        # Add a date if it's a post
         if (doc_path := Path(doc.get_metadata("path"))).is_relative_to(config.POST_PATH):
             text = []
             commits_diffs = git.get_file_commits(doc_path)
@@ -38,13 +40,18 @@ def find_first_header(elem: pf.Element, doc: pf.Doc) -> pf.Div | None:
                     [
                         pf.LineBreak,
                         pf.Span(
-                            pf.Str(f"Modified {formatted_date_short}"),
+                            pf.Str(f"Revised {formatted_date_short}"),
                             attributes={"title": formatted_date_long},
                         ),
                     ]
                 )
             return pf.Div(elem, pf.Div(pf.Para(*text), classes=["post-date"]), classes=["side-by-side"])
     return None
+
+
+def stop_if(doc: pf.Doc) -> bool:
+    """Bail if we found a title."""
+    return doc.doc.get_metadata("found_title", False)
 
 
 def finalize(doc: pf.Doc) -> None:
@@ -54,7 +61,7 @@ def finalize(doc: pf.Doc) -> None:
 
 def main(doc: pf.Doc | None = None) -> pf.Doc | None:
     """Run actions."""
-    return pf.run_filter(find_first_header, finalize=finalize, doc=doc)
+    return pf.run_filter(find_first_header, finalize=finalize, doc=doc, stop_if=stop_if)
 
 
 if __name__ == "__main__":

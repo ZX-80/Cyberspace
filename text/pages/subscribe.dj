@@ -5,8 +5,8 @@
 If you want to keep up with any changes on this site, but don't feel like checking it often, you can subscribe to any of the feeds listed below.
 Raw feeds aren't for human consumption -- you'll need to copy these links into an RSS / Atom reader.
 
-- [*`Atom feed`*](/atom.xml): The preferred method using the superior Atom format
-- [*`RSS feed`*](/rss.xml): For readers that don't support Atom
+- [*`Atom feed`*](/feed/atom.xml): The preferred method using the superior Atom format
+- [*`RSS feed`*](/feed/rss.xml): For readers that don't support Atom
 
 :::
 

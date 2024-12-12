@@ -1,0 +1,43 @@
+:{#metadata
+  title="Feed"
+  file_type="xslt"
+}
+
+# `<xsl:if test="/rss/channel">RSS</xsl:if><xsl:if test="/atom:feed">Atom</xsl:if>`{=html} Feed
+
+---
+
+`<xsl:value-of select="/rss/channel/description" />`{=html}
+`<xsl:value-of select="/atom:feed/atom:subtitle" />`{=html}
+
+::: important
+This page isn't for human consumption – please copy-and-paste [this pages URL][]
+into your news reader. See the [subscribe][] page for more details.
+
+[this pages URL]: #
+[subscribe]: /pages/subscribe
+:::
+
+
+# Posts
+
+---
+
+:::: side-by-side
+
+{style="width: 35rem;"}
+:::
+
+`<xsl:call-template name="list-feeds" />`{=html}
+
+:::
+
+:::
+
+## Raw Feed
+
+`<xsl:call-template name="raw-feeds" />`{=html}
+
+:::
+
+::::

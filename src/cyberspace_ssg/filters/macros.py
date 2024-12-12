@@ -119,7 +119,6 @@ def post_list_macro(elem: pf.Element, doc: pf.Doc) -> pf.RawBlock | list[None] |
                     for path, post_future in config.futures.items()
                     if path.is_relative_to(config.POST_PATH) and path != Path(doc.get_metadata("path"))
                 ]
-                print(relevant_docs)
                 concurrent.futures.wait(post_future for _, post_future in relevant_docs if post_future)
 
                 # Build list
@@ -194,7 +193,7 @@ def macro_action(elem: pf.Element, doc: pf.Doc) -> pf.RawBlock | list[None] | No
             case "metadata" if not inline:
                 for attribute, value in span.attributes.items():
                     match attribute.lower():
-                        case "title" | "date" | "banner":
+                        case "title" | "date" | "banner" | "file_type":
                             doc.metadata[attribute] = value
                         case _:
                             logger.warning(f"Unknown metadata attribute: {attribute}={value}")

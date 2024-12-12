@@ -23,7 +23,7 @@ import pygments
 import pygments.formatters
 import pygments.lexers
 
-from ..config import CSS_PATH, WEB_PATH
+from ..config import STYLE_PATH, WEB_PATH
 
 STYLE = "gruvbox-dark"
 """The style for syntax highlighting."""
@@ -77,7 +77,7 @@ def highlight_codeblock(elem: pf.Element, _doc: pf.Doc) -> pf.Div | None:
 def main(doc: pf.Doc | None = None) -> pf.Doc | None:
     """Run actions."""
     # Create CSS file if necessary
-    css_full_path = WEB_PATH / CSS_PATH / Path("pygments.css")
+    css_full_path = WEB_PATH / STYLE_PATH / Path("pygments.css")
     if not css_full_path.exists():
         formatter = pygments.formatters.HtmlFormatter(style=STYLE)  # pylint: disable=no-member
         css_full_path.write_text(formatter.get_style_defs(".highlight"), encoding="utf-8")

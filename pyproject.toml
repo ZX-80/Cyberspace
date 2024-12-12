@@ -13,6 +13,7 @@ dependencies = [
     "mypy == 1.11.2",
     "black == 24.8.0",
     "isort == 5.13.2",
+    "feedgen-1.0.0",
 ]
 
 [project.scripts]
