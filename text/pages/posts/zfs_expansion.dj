@@ -6,12 +6,18 @@
 
 ---
 
-A collection of calculators from around the web, for the [ZFS](https://en.wikipedia.org/wiki/ZFS?useskin=vector) filesystem. This 
-was mainly done to preserve them in one place, and to experiment with using [PyScript](https://pyscript.net/)
-(allows python to be used for browser scripting instead of javascript).
+A collection of calculators from around the web, for the [ZFS][] filesystem.
+This was mainly done to preserve them in one place, and to experiment with
+using [PyScript][] (allows python to be used for browser scripting instead of
+javascript).
 
-If you don't know much about ZFS, or need to brush up on your knowledge, ["OpenZFS: the final word in file 
-systems"](https://jro.io/truenas/openzfs/) by Jason Rose is a fantastic introduction.
+If you don't know much about ZFS, or need to brush up on your knowledge,
+["OpenZFS: the final word in file systems"][] by Jason Rose is a fantastic
+introduction.
+
+[ZFS]: https://en.wikipedia.org/wiki/ZFS
+[PyScript]: https://pyscript.net
+["OpenZFS: the final word in file systems"]: https://jro.io/truenas/openzfs
 
 \
 
@@ -19,17 +25,20 @@ systems"](https://jro.io/truenas/openzfs/) by Jason Rose is a fantastic introduc
 
 ---
 
-The latest TrueNAS ([Electric-Eel / 24.10](https://www.truenas.com/docs/scale/24.10/gettingstarted/scalereleasenotes/))
-now supports RAIDZ expansion, which allows you to append disks to an existing
-vdev. This allows you to extend you're vdevs over time, rather than having to erase the vdev, create a new one, and
-restore from backup. It has one small caveat however, which is that the existing data still uses the data-to-parity
-ratio and block width of the old vdev size. This effectively means that you don't get the full capacity of your
+The latest TrueNAS ([Electric-Eel / 24.10][]) now supports RAIDZ expansion,
+which allows you to append disks to an existing vdev. This allows you to extend
+you're vdevs over time, rather than having to erase the vdev, create a new one,
+and restore from backup. It has one small caveat however, which is that the
+existing data still uses the data-to-parity ratio and block width of the old
+vdev size. This effectively means that you don't get the full capacity of your
 drives until that existing data is rewritten.
 
-This calculator allows you to determine how much space is lost compared to creating a new vdev from scratch.
+This calculator, based on the TrueNAS [RAIDZ extension calculator][], allows
+you to determine how much space is lost compared to creating a new vdev from
+scratch.
 
-> Credit: based on the TrueNas calculator at <https://www.truenas.com/docs/references/extensioncalculator>, which in turn
-is based on [this spreadsheet](https://docs.google.com/spreadsheets/d/1qiDPfLN-K88FMHMxcgtkxswY5Wtu7h9tBAOgJfnO7VE).
+[Electric-Eel / 24.10]: https://www.truenas.com/docs/scale/24.10/gettingstarted/scalereleasenotes
+[RAIDZ extension calculator]: https://www.truenas.com/docs/references/extensioncalculator
 
 ---
 
@@ -38,32 +47,38 @@ is based on [this spreadsheet](https://docs.google.com/spreadsheets/d/1qiDPfLN-K
 :::
 
 ```=html
-    <label style="display: block">
-      <span style="display: inline-block; width: 19rem;">Drive Size (TB):</span>
-      <input type="text" id="drive_size_input" style="width: 6rem;" />
-    </label>
-    <label style="display: block">
-      <span style="display: inline-block; width: 19rem;">RAIDZ Level / Number of Parity Disks:</span>
-      <select id="raidz_level_input" style="width: 6rem;">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-      </select>
-    </label>
-    <label style="display: block">
-      <span style="display: inline-block; width: 19rem;">Data Expansion Threshold (%):</span>
-    <input type="text" id="expansion_input" style="width: 6rem;" />
-    </label>
-    <label style="display: block">
-      <span style="display: inline-block; width: 19rem;">Initial Number of Drives:</span>
-    <input type="text" id="initial_input" style="width: 6rem;" />
-    </label>
-    <label style="display: block">
-      <span style="display: inline-block; width: 19rem;">Final Number of Drives:</span>
-    <input type="text" id="final_input" style="width: 6rem;" />
-    </label>
-    <br>
-    <button mpy-click="calculate">Calculate</button>
+  <label style="display: block">
+    <span style="display: inline-block; width: 19rem;">Drive Size (TB):</span>
+    <input type="text" id="drive_size_input" style="width: 6rem;" />
+  </label>
+
+  <label style="display: block">
+    <span style="display: inline-block; width: 19rem;">RAIDZ Level / Number of Parity Disks:</span>
+    <select id="raidz_level_input" style="width: 6rem;">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+    </select>
+  </label>
+
+  <label style="display: block">
+    <span style="display: inline-block; width: 19rem;">Initial VDEV Capacity (%):</span>
+  <input type="text" id="expansion_input" style="width: 6rem;" />
+  </label>
+
+  <label style="display: block">
+    <span style="display: inline-block; width: 19rem;">Initial Number of Drives:</span>
+  <input type="text" id="initial_input" style="width: 6rem;" />
+  </label>
+
+  <label style="display: block">
+    <span style="display: inline-block; width: 19rem;">Final Number of Drives:</span>
+  <input type="text" id="final_input" style="width: 6rem;" />
+  </label>
+
+  <br>
+
+  <button mpy-click="calculate">Calculate</button>
 ```
 
 :::
@@ -71,39 +86,39 @@ is based on [this spreadsheet](https://docs.google.com/spreadsheets/d/1qiDPfLN-K
 :::
 
 ```=html
-    <b>Extend VDEV to final width all at once</b>
+  <b>Extend VDEV to final width all at once</b>
 
-    <label style="display: block; padding-left: 2rem">
-      <span style="display: inline-block; width: 19rem;">Total capacity lost:</span>
-      <span id="total_capacity_recovered">0%</span>
-    </label>
+  <label style="display: block; padding-left: 2rem">
+    <span style="display: inline-block; width: 19rem;">Total capacity lost:</span>
+    <span id="total_capacity_recovered">0%</span>
+  </label>
 
-    <label style="display: block; padding-left: 2rem">
-      <span style="display: inline-block; width: 19rem;">Capacity lost:</span>
-      <span id="capacity_recovered">0 TB</span>
-    </label>
+  <label style="display: block; padding-left: 2rem">
+    <span style="display: inline-block; width: 19rem;">Capacity lost:</span>
+    <span id="capacity_recovered">0 TB</span>
+  </label>
 
-    <label style="display: block; padding-left: 2rem">
-      <span style="display: inline-block; width: 19rem;">Capacity lost in drives:</span>
-      <span id="drives_worth_recovered">0 Drives</span>
-    </label>
+  <label style="display: block; padding-left: 2rem">
+    <span style="display: inline-block; width: 19rem;">Capacity lost in drives:</span>
+    <span id="drives_worth_recovered">0 Drives</span>
+  </label>
 
-    <b>Extend VDEV one drive at a time</b>
+  <b>Extend VDEV one drive at a time</b>
 
-    <label style="display: block; padding-left: 2rem">
-      <span style="display: inline-block; width: 19rem;">Total capacity lost:</span>
-      <span id="total_capacity_recovered_compound">0%</span>
-    </label>
+  <label style="display: block; padding-left: 2rem">
+    <span style="display: inline-block; width: 19rem;">Total capacity lost:</span>
+    <span id="total_capacity_recovered_compound">0%</span>
+  </label>
 
-    <label style="display: block; padding-left: 2rem">
-      <span style="display: inline-block; width: 19rem;">Capacity lost:</span>
-      <span id="capacity_recovered_compound">0 TB</span>
-    </label>
+  <label style="display: block; padding-left: 2rem">
+    <span style="display: inline-block; width: 19rem;">Capacity lost:</span>
+    <span id="capacity_recovered_compound">0 TB</span>
+  </label>
 
-    <label style="display: block; padding-left: 2rem">
-      <span style="display: inline-block; width: 19rem;">Capacity lost in drives:</span>
-      <span id="drives_worth_recovered_compound">0 Drives</span>
-    </label>
+  <label style="display: block; padding-left: 2rem">
+    <span style="display: inline-block; width: 19rem;">Capacity lost in drives:</span>
+    <span id="drives_worth_recovered_compound">0 Drives</span>
+  </label>
 ```
 
 :::
@@ -111,40 +126,36 @@ is based on [this spreadsheet](https://docs.google.com/spreadsheets/d/1qiDPfLN-K
 ::::
 
 ```=pyscript
+  from pyscript import document
 
-    from pyscript import document
+  def calculate(event):
+      # Convert inputs
+      drive_size = int(document.querySelector("#drive_size_input").value)
+      raidz_level = int(document.querySelector("#raidz_level_input").value)
+      expansion = float(document.querySelector("#expansion_input").value)
+      initial_drives = int(document.querySelector("#initial_input").value)
+      final_drives = int(document.querySelector("#final_input").value)
 
-    def calculate(event):
-        drive_size = int(document.querySelector("#drive_size_input").value)
-        raidz_level = int(document.querySelector("#raidz_level_input").value)
-        expansion = float(document.querySelector("#expansion_input").value)
-        initial_drives = int(document.querySelector("#initial_input").value)
-        final_drives = int(document.querySelector("#final_input").value)
+      # Results for installing all drives at once
+      expansionPercent = expansion / 100
+      percentage_decrease = (final_drives - initial_drives) / final_drives
+      drives_worth_recovered = expansionPercent * raidz_level * percentage_decrease
+      capacity_recovered = drive_size * drives_worth_recovered
+      total_capacity_recovered = drives_worth_recovered / final_drives
 
-        expansionPercent = expansion / 100
-        percentage_decrease = (final_drives-initial_drives) / final_drives
-        drives_worth_recovered = expansionPercent * raidz_level * percentage_decrease
-        capacity_recovered = drive_size * drives_worth_recovered
-        total_capacity_recovered = drives_worth_recovered / final_drives
+      document.querySelector("#capacity_recovered").innerText = f"{capacity_recovered:.2f} TB"
+      document.querySelector("#drives_worth_recovered").innerText = f"{drives_worth_recovered:.2f} Drives"
+      document.querySelector("#total_capacity_recovered").innerText = f"{total_capacity_recovered:.2%}"
 
-        l = 0
-        for i in range(initial_drives + 1, final_drives + 1):
-            l += 1 / i
-        drives_worth_recovered_compound = expansionPercent * raidz_level * l
-        capacity_recovered_compound = drive_size * drives_worth_recovered_compound
-        total_capacity_recovered_compound = drives_worth_recovered_compound / final_drives
-        
-        span = document.querySelector("#capacity_recovered")
-        span.innerText = f"{capacity_recovered:.2f} TB"
-        span = document.querySelector("#drives_worth_recovered")
-        span.innerText = f"{drives_worth_recovered:.2f} Drives"
-        span = document.querySelector("#total_capacity_recovered")
-        span.innerText = f"{total_capacity_recovered:.2%}"
+      # Results for installing drives one at a time
+      harmonic_sum = 0  # Calculate the sum of a finite harmonic series
+      for i in range(initial_drives + 1, final_drives + 1):
+          harmonic_sum += 1 / i
+      drives_worth_recovered_compound = expansionPercent * raidz_level * harmonic_sum
+      capacity_recovered_compound = drive_size * drives_worth_recovered_compound
+      total_capacity_recovered_compound = drives_worth_recovered_compound / final_drives
 
-        span = document.querySelector("#capacity_recovered_compound")
-        span.innerText = f"{capacity_recovered_compound:.2f} TB"
-        span = document.querySelector("#drives_worth_recovered_compound")
-        span.innerText = f"{drives_worth_recovered_compound:.2f} Drives"
-        span = document.querySelector("#total_capacity_recovered_compound")
-        span.innerText = f"{total_capacity_recovered_compound:.2%}"
+      document.querySelector("#capacity_recovered_compound").innerText = f"{capacity_recovered_compound:.2f} TB"
+      document.querySelector("#drives_worth_recovered_compound").innerText = f"{drives_worth_recovered_compound:.2f} Drives"
+      document.querySelector("#total_capacity_recovered_compound").innerText = f"{total_capacity_recovered_compound:.2%}"
 ```
