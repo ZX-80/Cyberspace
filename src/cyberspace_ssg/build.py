@@ -180,6 +180,18 @@ class SiteConstructor:
         # HTML Head
         with page.head:
             dom.meta(charset="utf-8")
+            dom.link(
+                rel="alternate",
+                title="Atom Feed",
+                type="application/atom+xml",
+                href=f"https://{(config.WEBSITE_URL / config.ATOM_PATH.relative_to("/")).as_posix()}",
+            )
+            dom.link(
+                rel="alternate",
+                title="RSS Feed",
+                type="application/rss+xml",
+                href=f"https://{(config.WEBSITE_URL / config.RSS_PATH.relative_to("/")).as_posix()}",
+            )
             for css_file in self.css_files:
                 dom.link(rel="stylesheet", type="text/css", href=Path("/") / css_file)
 
@@ -353,7 +365,6 @@ class SiteConstructor:
                     and path.with_suffix("") != config.POST_PATH / "index"
                     and (commits := git.load_git_data().get(path.as_posix(), []))
                 ):
-                    logger.critical(f"{path}")
                     git_date_created = commits[-1][0].date
                     git_date_modified = commits[0][0].date
                     title = cache.load_cache()[path].metadata["title"]
