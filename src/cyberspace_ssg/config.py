@@ -49,6 +49,9 @@ ATOM_PATH = FEED_PATH / "atom.xml"
 RSS_PATH = FEED_PATH / "rss.xml"
 """The path for the RSS feed."""
 
+JSON_PATH = FEED_PATH / "feed.json"
+"""The path for the JSON feed."""
+
 # Some globally shared WORM (write once, read many) variables
 logger = logging.getLogger("SSG")
 """Used for console output."""

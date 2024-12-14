@@ -23,6 +23,7 @@ from lxml import etree
 
 from . import cache, config, filters, formats, git
 from .config import logger
+from .json_feed import JSONFeed
 
 
 @dataclass
@@ -191,6 +192,12 @@ class SiteConstructor:
                 title="RSS Feed",
                 type="application/rss+xml",
                 href=f"https://{(config.WEBSITE_URL / config.RSS_PATH.relative_to("/")).as_posix()}",
+            )
+            dom.link(
+                rel="alternate",
+                title="JSON Feed",
+                type="application/feed+json",
+                href=f"https://{(config.WEBSITE_URL / config.JSON_PATH.relative_to("/")).as_posix()}",
             )
             for css_file in self.css_files:
                 dom.link(rel="stylesheet", type="text/css", href=Path("/") / css_file)
@@ -391,6 +398,10 @@ class SiteConstructor:
                 path = config.WEB_PATH / short_path.relative_to("/")
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(styled_text)
+
+            # Write JSON feed
+            json_feed = JSONFeed(fg)
+            json_feed.write(config.WEB_PATH / config.JSON_PATH.relative_to("/"))
 
         logger.info(f"Converted {len(processed_files)} files in {time.perf_counter() - total_start_time:.2f} seconds")
 

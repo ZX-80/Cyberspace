@@ -3,7 +3,8 @@
   file_type="xslt"
 }
 
-# `<xsl:if test="/rss/channel">RSS</xsl:if><xsl:if test="/atom:feed">Atom</xsl:if>`{=html} Feed
+# `<xsl:if test="/rss/channel">RSS</xsl:if>
+<xsl:if test="/atom:feed">Atom</xsl:if>`{=html} Feed
 
 ---
 
@@ -11,7 +12,7 @@
 `<xsl:value-of select="/atom:feed/atom:subtitle" />`{=html}
 
 ::: important
-This page isn't for human consumption – please copy-and-paste [this pages URL][]
+This page isn't for human consumption. Please copy-and-paste [this pages URL][]
 into your news reader. See the [subscribe][] page for more details.
 
 [this pages URL]: #
