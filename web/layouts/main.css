@@ -9,6 +9,7 @@
   --postColor: #1b1d1f;
 
   --quoteTextColor: #707070;
+  --captionTextColor: #999;
   --textHighlightColor: #b57e11;
   --codeHighlightColor: #463b10;
   --codeHighlightTitleBG: #353535;
@@ -56,6 +57,16 @@
     --rawLinkColor: #0070a0;
     --rawHighlightedLinkColor: #eee;
   }
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
 body {
@@ -169,8 +180,28 @@ h3.sidebar {
 
 /* ================ ARTICLE ================ */
 
+figure {
+  display: flex;
+  flex-flow: column;
+  margin: auto;
+}
+
+figcaption,
+caption {
+  color: var(--captionTextColor);
+  font-style: italic;
+  font-size: 1rem;
+  padding-bottom: 0.5rem;
+  text-align: center;
+}
+
+figcaption>p {
+  margin: 0;
+}
+
 caption {
   caption-side: bottom;
+  margin-top: 0.3rem
 }
 
 .index-list input[type="radio"] {
@@ -447,7 +478,8 @@ blockquote blockquote {
 p,
 blockquote,
 table {
-  margin: 0.8em 0;
+  margin: 0.8rem 0;
+  margin-bottom: 0.5rem
 }
 
 /* Formatting for "index" style list */
