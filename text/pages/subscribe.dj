@@ -2,50 +2,73 @@
 
 ---
 
-If you want to keep up with any changes on this site, but don't feel like checking it often, you can subscribe to any of the feeds listed below.
-Raw feeds aren't for human consumption -- you'll need to copy these links into an RSS / Atom reader.
+If you want to keep up with any changes on this site, but don't feel like
+checking it often, you can subscribe to any of the feeds listed below. Raw
+feeds aren't for human consumption -- you'll need to copy these links into an
+RSS / Atom reader.
 
-- [*`Atom feed`*](/feed/atom.xml): The preferred method using the superior Atom format
-- [*`RSS feed`*](/feed/rss.xml): For readers that don't support Atom
+- [*`Atom feed`*][]: The preferred method using the superior Atom format
+- [*`RSS feed`*][]: For readers that don't support Atom
+- [*`JSON feed`*][]: For readers that support [JSON feeds][]
 
-:::
+[*`Atom feed`*]: /feed/atom.xml
+[*`RSS feed`*]: /feed/rss.xml
+[*`JSON feed`*]: /feed/feed.json
+[JSON feeds]: https://www.jsonfeed.org
 
 ## RSS / Atom Readers
 
 ---
 
-[RSS](https://en.wikipedia.org/wiki/RSS) [^rss] (Really Simple Syndication) and [Atom](https://en.wikipedia.org/wiki/Atom_(web_standard)) [^atom] (Atom Syndication Format) feeds offer another way to get content from this website. 
-Subscribing to RSS / Atom feeds allows you to keep track of multiple websites in a single feed reader program (desktop, app, browser extension),
-which monitors sites for new content, removing the need for the user to manually do so.
+[RSS][] (Really Simple Syndication) and [Atom][] (Atom Syndication Format)
+feeds offer another way to get content from this website. Subscribing to RSS /
+Atom feeds allows you to keep track of multiple websites in a single feed
+reader program (desktop, app, browser extension), which monitors sites for new
+content, removing the need for the user to manually do so.
+
+[RSS]: https://en.wikipedia.org/wiki/RSS
+[Atom]: https://en.wikipedia.org/wiki/Atom_(web_standard)
 
 ::: tabset
 
 # Windows
 
-Other than my servers, I run windows on all my computers, so these are the programs I'd use.
+Other than my servers, I run windows on all my computers, so these are the
+programs I'd use.
 
-- [RSSOwl](https://github.com/Xyrio/RSSOwlnix/): This is what I personally use, but it's a bit outdated. 
-- [Raven Reader](https://ravenreader.app/): Great UI, open source, and available on linux too. I'd upgrade to this if I ever got a new computer.
-- [Fluent Reader](https://hyliu.me/fluent-reader/): A more modern RSS reader. Can be run locally or self-hosted.
+- [RSSOwl][]: This is what I personally use, but it's a bit outdated. 
+- [Raven Reader][]: Great UI, open source, and available on linux too. I'd
+upgrade to this if I ever got a new computer.
+- [Fluent Reader][]: A more modern RSS reader. Can be run locally or self-hosted.
 
-{% break djot list %}
+[RSSOwl]: https://github.com/Xyrio/RSSOwlnix
+[Raven Reader]: https://ravenreader.app
+[Fluent Reader]: https://hyliu.me/fluent-reader
 
 # Apple Mac / IOS
 
-I don't use any Apple devices other than an Apple TV and an iPad for ForeFlight. 
-So while I can't personally recommend anything, I've heard good things about these.
+I don't use any Apple devices other than an Apple TV and an iPad for
+ForeFlight. So while I can't personally recommend anything, I've heard good
+things about these.
 
-- [NetNewsWire](https://netnewswire.com/): Incredibly polished, fast, and open source. You can also sync via iCloud.
-- [Reeder](https://reederapp.com/): Pretty flexible, and makes processing a lot of feeds easy.
+- [NetNewsWire][]: Incredibly polished, fast, and open source. You can also
+sync via iCloud.
+- [Reeder][]: Pretty flexible, and makes processing a lot of feeds easy.
 
-{% break djot list %}
+[NetNewsWire]: https://netnewswire.com
+[Reeder]: https://reederapp.com
 
 # Linux
 
 I don't run any Linux computers with a GUI, but these seem like decent choices.
 
-- [Mozilla Thunderbird](https://www.thunderbird.net/): I use this as an email client too and it does the job.
-- [Raven Reader](https://ravenreader.app/): Great UI, open source, and available on Windows too.
-- [Newsboat](https://github.com/newsboat/newsboat): RSS/Atom in the terminal
+- [Mozilla Thunderbird][]: I use this as an email client too and it does the
+job.
+- [Raven Reader][]: Great UI, open source, and available on Windows too.
+- [Newsboat][]: RSS/Atom in the terminal
+
+[Mozilla Thunderbird]: https://www.thunderbird.net
+[Raven Reader]: https://ravenreader.app
+[Newsboat]: https://github.com/newsboat/newsboat
 
 :::
