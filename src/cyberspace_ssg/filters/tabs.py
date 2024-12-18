@@ -46,7 +46,8 @@ def convert_tabsets(elem: pf.Element, _doc: pf.Doc) -> list[pf.Block] | None:
         and "tabset" in elem.parent.classes
     ):
         # Get header text and remove element
-        tab_title = pf.stringify(elem.content.pop(0))
+        tab_title = pf.stringify(header := elem.content.pop(0))
+        tab_label_id = header.content.pop(0).url.removeprefix("#")
 
         # Replace with HTML elements
         elem.classes.remove("section")
@@ -62,7 +63,7 @@ def convert_tabsets(elem: pf.Element, _doc: pf.Doc) -> list[pf.Block] | None:
                     )
                 )
             ),
-            pf.RawBlock(text=str(dom.label(tab_title, id=elem.identifier, cls="tab-label", fr=f"tab-{tab_id}"))),
+            pf.RawBlock(text=str(dom.label(tab_title, id=tab_label_id, cls="tab-label", fr=f"tab-{tab_id}"))),
             pf.Div(*elem.content, classes=["tab-content"] + elem.classes),
         ]
     return None
