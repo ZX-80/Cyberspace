@@ -401,8 +401,7 @@ class SiteConstructor:
                 path.write_bytes(styled_text)
 
             # Write JSON feed
-            json_feed = JSONFeed(fg)
-            json_feed.write(config.WEB_PATH / config.JSON_PATH.relative_to("/"))
+            JSONFeed(fg).write(config.WEB_PATH / config.JSON_PATH.relative_to("/"))
 
         logger.info(f"Converted {len(processed_files)} files in {time.perf_counter() - total_start_time:.2f} seconds")
 
