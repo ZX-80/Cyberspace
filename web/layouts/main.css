@@ -261,7 +261,7 @@ article td>code {
   border-radius: 0.16rem;
 }
 
-article table {
+article table:not(.highlighttable) {
   margin: 0 auto;
   max-width: fit-content;
   margin-bottom: 1.5rem;
@@ -270,16 +270,27 @@ article table {
   overflow-x: auto;
 }
 
-article table th {
+article table.highlighttable th {
   color: #fefefe;
-  background-color: #27282c;
 }
 
-article table tr {
+article table:not(.highlighttable) th {
+  color: #fefefe;
+  background-color: #27282c;
+  padding: 0.16rem 1.2rem;
+  border: 0.2rem solid #27282c;
+}
+
+article table:not(.highlighttable) td {
+  padding: 0.16rem 1.2rem;
+  border: 0.2rem solid #27282c;
+}
+
+article table:not(.highlighttable) tr {
   background-color: #363d40;
 }
 
-article table tr:nth-child(odd) {
+article table:not(.highlighttable) tr:nth-child(odd) {
   background-color: #2f3032;
 }
 
@@ -296,10 +307,32 @@ table p {
   width: 100%;
 }
 
-article th,
-article td {
-  padding: 0.16rem 1.2rem;
-  border: 0.2rem solid #27282c;
+article .example-block {
+  display: flex;
+  border: 1px solid grey;
+  border-radius: 5px;
+  margin: 0.5rem 0 0.8rem 0;
+}
+
+article .example-block>*:first-child {
+  /* width: 50%; */
+  flex: 1;
+  background-color: var(--navColor);
+  border-radius: 5px;
+  max-width: calc(50% - 1rem);
+}
+
+article .example-block>*:first-child .highlight {
+  background: none;
+  color: var(--textColor);
+  border: none;
+}
+
+article .example-block>*:last-child {
+  margin: 1rem;
+  /* align-content: center; */
+  flex: 1;
+  max-width: calc(50% - 1rem);
 }
 
 article .side-by-side {
@@ -563,7 +596,6 @@ dd>p {
 .highlight {
   font-family: 'Consolas';
   font-size: 0.9rem;
-  overflow-x: auto;
   background: var(--navColor);
   border: solid 1px var(--articleBorder);
   border-radius: 3px;
@@ -573,7 +605,8 @@ dd>p {
 .highlight>.highlighttable {
   width: 100%;
   margin: 0rem;
-  padding: 0rem 1rem;
+  /* padding: 0rem 1rem; */
+  display: flex;
   border-collapse: collapse;
 }
 
@@ -582,13 +615,24 @@ dd>p {
   /* color: var(--textColor); */
 }
 
-.highlight>.highlighttable th {
-  padding: 0rem;
+.highlight>.highlighttable tbody {
+  width: inherit;
 }
 
-.highlight .linenos {
-  width: 0rem;
+.highlight>.highlighttable tr {
+  display: flex;
+  gap: 0.5rem;
 }
+
+.highlight>.highlighttable th {
+  padding: 0rem;
+  flex-grow: 1;
+}
+
+.highlight>.highlighttable tr:last-of-type {
+  padding: 0rem 0.5rem;
+}
+
 
 .no-linenos>.highlight .linenos {
   display: none;
@@ -606,18 +650,35 @@ dd>p {
 .highlight span.filename {
   font-family: 'Consolas';
   font-size: 0.9rem;
-  overflow-x: auto;
+  /* overflow-x: auto; */
   background: var(--codeHighlightTitleBG);
-  padding: 0.5rem 0rem;
-  width: calc(100% - 1rem);
-  display: block;
-  padding-left: 1rem;
+  padding: 0.5rem 0rem 0.5rem 1rem;
+  /* width: calc(100% - 1rem); */
+  /* display: block; */
+  /* padding-left: 1rem; */
+  display: flex;
   text-align: left;
 
 }
 
+td.linenos .normal {
+  padding-left: 0rem !important;
+}
+
 .code {
-  padding-left: 0.75rem;
+  overflow-x: scroll;
+}
+
+article pre {
+  margin: 0.2rem 0;
+}
+
+.Post .note p,
+.Post .important p,
+.Post .warning p,
+.Post .tip p,
+.Post .caution p {
+  margin: 0.8rem 0;
 }
 
 /* Alerts */
@@ -686,7 +747,7 @@ dd>p {
   height: 1.5rem;
   width: 1rem;
   min-width: 1rem;
-  padding-right: 0.5rem;
+  padding-right: 1.5rem;
   display: flex;
 }
 
@@ -695,7 +756,7 @@ dd>p {
   height: 1.5rem;
   width: 1rem;
   min-width: 1rem;
-  padding-right: 0.5rem;
+  padding-right: 1.5rem;
   display: flex;
 }
 
@@ -704,7 +765,7 @@ dd>p {
   height: 1.5rem;
   width: 1rem;
   min-width: 1rem;
-  padding-right: 0.5rem;
+  padding-right: 1.5rem;
   display: flex;
 }
 
@@ -713,7 +774,7 @@ dd>p {
   height: 1.5rem;
   width: 1rem;
   min-width: 1rem;
-  padding-right: 0.5rem;
+  padding-right: 1.5rem;
   display: flex;
 }
 
@@ -722,7 +783,7 @@ dd>p {
   height: 1.5rem;
   width: 1rem;
   min-width: 1rem;
-  padding-right: 0.5rem;
+  padding-right: 1.5rem;
   display: flex;
 }
 
@@ -772,10 +833,17 @@ section[role="doc-endnotes"]>ol>li[id^="fn"] {
   margin-top: 0.2rem;
   border-top-left-radius: 0.25rem;
   border-top-right-radius: 0.25rem;
+  /* outline: 1px solid var(--articleBorder); */
 }
 
+/* .tabset .tab-label::before {
+  border: 1px solid var(--articleBorder);
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+} */
+
 .tabset .tab-content {
-  padding: 0.5rem;
+  padding: 1rem;
   order: 99;
   width: 100%;
   display: block;

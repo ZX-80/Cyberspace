@@ -217,8 +217,9 @@ class SiteConstructor:
                         dom.a(nav_name, cls="sidebar", href=nav_path)
                     if metadata.get("toc"):
                         dom.hr()
-                        for href, title in metadata["toc"].items():
-                            dom.a(title, cls="sidebar", href=f"#{href}")
+                        with dom.div(cls="tocLinks"):
+                            for href, title in metadata["toc"].items():
+                                dom.a(title, cls="sidebar", href=f"#{href}")
 
             # Generate banner and post
             with dom.div(cls="ArticleParent", style="float:right;"):
