@@ -31,13 +31,15 @@ you're vdevs over time, rather than having to erase the vdev, create a new one,
 and restore from backup. It has one small caveat however, which is that the
 existing data still uses the data-to-parity ratio and block width of the old
 vdev size. This effectively means that you don't get the full capacity of your
-drives until that existing data is rewritten.
+drives until that existing data is rewritten. If you're interested in recovering
+that capacity, check out [ZFS In-Place Rebalancing][] by Markus Ressel.
 
 This calculator, based on the TrueNAS [RAIDZ extension calculator][], allows
 you to determine how much space is lost compared to creating a new vdev from
 scratch.
 
 [Electric-Eel / 24.10]: https://www.truenas.com/docs/scale/24.10/gettingstarted/scalereleasenotes
+[ZFS In-Place Rebalancing]: https://github.com/markusressel/zfs-inplace-rebalancing
 [RAIDZ extension calculator]: https://www.truenas.com/docs/references/extensioncalculator
 
 ---
