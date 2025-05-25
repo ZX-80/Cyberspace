@@ -382,6 +382,10 @@ img {
 }
 
 /* Image at the top of the page */
+div:has(>.Banner) {
+  padding: 0rem 7rem;
+}
+
 img.Banner {
   width: 100%;
   object-fit: cover;
@@ -398,7 +402,8 @@ img.Banner {
 
 article {
   background-color: var(--articleBGColor);
-  margin: 2rem 9rem;
+  max-width: 100rem;
+  margin: 2rem auto;
 }
 
 /* Text box after optional banner */
@@ -412,8 +417,8 @@ article {
 .Post-parent {
   box-shadow: 0rem 0rem 0.5rem 0.2rem var(--articleShadowColor);
   /* padding: 1rem 3rem 1rem 3rem; */
-  margin-top: 1rem;
   background-color: var(--postColor);
+  margin: 1rem 7rem 0rem 7rem;
 }
 
 .post-date {
