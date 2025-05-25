@@ -138,7 +138,9 @@ class SiteConstructor:
 
             # Diff
             diff_id = next(diff_counter)
-            diffs += diff_template.format(html=diff_html, diff_id=diff_id, git_hash=commit.hash_id, body=commit.body)
+            diffs += diff_template.format(
+                html=diff_html.replace("`", "&#96;"), diff_id=diff_id, git_hash=commit.hash_id, body=commit.body
+            )
 
             # Commit list
             radio_id = next(radio_counter)

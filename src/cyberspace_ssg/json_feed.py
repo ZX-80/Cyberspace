@@ -18,7 +18,7 @@ class JSONFeed:
         self.feed["home_page_url"] = f"https://{config.WEBSITE_URL.as_posix()}"
         self.feed["feed_url"] = f"https://{(config.WEBSITE_URL / config.JSON_PATH.relative_to("/")).as_posix()}"
         self.feed["user_comment"] = (
-            "This page isn't for human consumption. Please copy-and-paste this pages URL into your news reader if it"
+            "This page isn't for human consumption. Please copy-and-paste this pages URL into your news reader if it "
             f"supports JSON feeds. See https://{(config.WEBSITE_URL / 'pages/subscribe').as_posix()} for more details."
         )
         self.feed["description"] = feed.subtitle()
