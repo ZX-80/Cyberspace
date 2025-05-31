@@ -91,34 +91,34 @@ scratch.
   <b>Extend VDEV to final width all at once</b>
 
   <label style="display: block; padding-left: 2rem">
-    <span style="display: inline-block; width: 19rem;">Total capacity lost:</span>
+    <span style="display: inline-block; width: 19rem;">Capacity lost (%):</span>
     <span id="total_capacity_recovered">0%</span>
   </label>
 
   <label style="display: block; padding-left: 2rem">
-    <span style="display: inline-block; width: 19rem;">Capacity lost:</span>
+    <span style="display: inline-block; width: 19rem;">Capacity lost (bytes):</span>
     <span id="capacity_recovered">0 TB</span>
   </label>
 
   <label style="display: block; padding-left: 2rem">
-    <span style="display: inline-block; width: 19rem;">Capacity lost in drives:</span>
+    <span style="display: inline-block; width: 19rem;">Capacity lost (drives):</span>
     <span id="drives_worth_recovered">0 Drives</span>
   </label>
 
   <b>Extend VDEV one drive at a time</b>
 
   <label style="display: block; padding-left: 2rem">
-    <span style="display: inline-block; width: 19rem;">Total capacity lost:</span>
+    <span style="display: inline-block; width: 19rem;">Capacity lost (%):</span>
     <span id="total_capacity_recovered_compound">0%</span>
   </label>
 
   <label style="display: block; padding-left: 2rem">
-    <span style="display: inline-block; width: 19rem;">Capacity lost:</span>
+    <span style="display: inline-block; width: 19rem;">Capacity lost (bytes):</span>
     <span id="capacity_recovered_compound">0 TB</span>
   </label>
 
   <label style="display: block; padding-left: 2rem">
-    <span style="display: inline-block; width: 19rem;">Capacity lost in drives:</span>
+    <span style="display: inline-block; width: 19rem;">Capacity lost (drives):</span>
     <span id="drives_worth_recovered_compound">0 Drives</span>
   </label>
 ```
@@ -150,9 +150,8 @@ scratch.
       document.querySelector("#total_capacity_recovered").innerText = f"{total_capacity_recovered:.2%}"
 
       # Results for installing drives one at a time
-      harmonic_sum = 0  # Calculate the sum of a finite harmonic series
-      for i in range(initial_drives + 1, final_drives + 1):
-          harmonic_sum += 1 / i
+      # Calculate the sum of a finite harmonic series
+      harmonic_sum = sum(1 / i for i in range(initial_drives + 1, final_drives + 1))
       drives_worth_recovered_compound = expansionPercent * raidz_level * harmonic_sum
       capacity_recovered_compound = drive_size * drives_worth_recovered_compound
       total_capacity_recovered_compound = drives_worth_recovered_compound / final_drives
