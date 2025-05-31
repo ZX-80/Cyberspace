@@ -348,6 +348,12 @@ article .side-by-side-center {
   gap: 1rem;
 }
 
+article .side-by-side-end {
+  display: flex;
+  align-items: end;
+  gap: 3rem;
+}
+
 footer {
   background: var(--navColor);
   padding-left: 1rem;
