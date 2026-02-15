@@ -4,9 +4,13 @@ Replace symbol with emojis. Example usage:
 :golf:
 """
 
-from contextlib import suppress
 import unicodedata
+from contextlib import suppress
+
 import panflute as pf
+
+PRIORITY = 10
+"""The filters execution priority (lower executes earlier)"""
 
 
 def replace_symbol(elem: pf.Element, _doc: pf.Doc) -> pf.Str | None:

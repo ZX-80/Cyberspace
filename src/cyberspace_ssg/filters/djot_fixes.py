@@ -15,6 +15,9 @@ Detect checkboxes. Pandoc should convert them, but it doesn't. Example usage:
 
 import panflute as pf
 
+PRIORITY = 10
+"""The filters execution priority (lower executes earlier)"""
+
 check_value = {"[ ]": False, "[X]": True, "[x]": True}
 check_char = ["☐", "☒"]  # ☑
 

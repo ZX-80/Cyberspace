@@ -1045,10 +1045,9 @@ text. The result is placed directly into the processed tree where the macro was.
 
 ## Metadata Macro
 
-Similar to [frontmatter][], but it isn't parsed separate from the document. In
-hindsight it would have been nicer to separate, as I could gather metadata
-without processing the file. This macro defines some document properties. It
-can appear anywhere (duplicates overwrite each other).
+Similar to [frontmatter][], but it isn't parsed separate from the document.
+This macro defines some document properties. It can appear anywhere
+(duplicates overwrite each other).
 
 [frontmatter]: https://docs.github.com/en/contributing/writing-for-github-docs/using-yaml-frontmatter
 
@@ -1086,7 +1085,7 @@ Expands to a list (sorted by date and series) of all posts on the site.
 ```
 
 :::
-{#post-list}
+:{#post-list}
 ::::
 
 ```=html

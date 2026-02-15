@@ -11,9 +11,12 @@ import panflute as pf
 
 from ..config import SOURCE_PATH, logger
 from ..formats import from_extension
-from .macros import macro_check
+from .metadata import macro_check
 
 # TODO: support inline includes
+
+PRIORITY = 10
+"""The filters execution priority (lower executes earlier)"""
 
 
 def include_action(elem: pf.Element, _doc: pf.Doc) -> Any | list[None] | None:

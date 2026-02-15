@@ -1,7 +1,6 @@
 """Build a static website."""
 
 import concurrent.futures
-import itertools
 import pkgutil
 import shutil
 import time
@@ -11,7 +10,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from importlib import import_module
 from pathlib import Path
-from string import Template
 from typing import Any, Iterator, Self
 
 import dominate
@@ -66,18 +64,17 @@ class SiteConstructor:
         logger.debug(f"Nav elements: {", ".join(self.nav_elements)}")
 
         # Locate all filter modules
-        self.filter_modules = [
-            import_module(module_name)
-            for _, module_name, _ in pkgutil.iter_modules(filters.__path__, prefix=f"{filters.__name__}.")
-        ]
+        self.filter_modules = sorted(
+            [
+                import_module(module_name)
+                for _, module_name, _ in pkgutil.iter_modules(filters.__path__, prefix=f"{filters.__name__}.")
+            ],
+            key=lambda module: module.PRIORITY,
+        )
         filter_names = map(lambda module: module.__name__.removeprefix(f"{filters.__name__}."), self.filter_modules)
         logger.debug(f"Filter modules: {", ".join(filter_names)}")
 
         self.batch_process_files()
-
-    def changelog_name(self, file_path: Path) -> Path:
-        """Convert regular path to changelog path."""
-        return file_path.with_stem(f"{file_path.stem}-changelog")
 
     def convert_source_to_html(
         self, source_text: str, input_format: str, source_path: Path
@@ -106,70 +103,7 @@ class SiteConstructor:
         )
         return html, metadata
 
-    def generate_source_changelog(self, relative_file_path: Path) -> tuple[str, dict[str, Any]]:
-        """Construct a changelog page."""
-        year: int | None = None
-        full_path = config.SOURCE_PATH / relative_file_path
-
-        # Templates
-        commit_list = ""
-        commit_list_template = (
-            '- `<label><input type="radio" name="changelog" id="radio{radio_id}" {checked}>`{{=html}} '
-            '{{={date}=}}{{title="{date_iso}"}} `<a>{text}</a></label>`{{=html}}\n'
-        )
-        radio_counter = itertools.count()
-
-        diffs = ""
-        diff_template = (
-            "::: changelog-diff{diff_id}\n{body}\n\n``` =html\n{html}\n```\n"
-            "{{.right-align}}\nCommit: `{git_hash}`\n\n:::\n"
-        )
-        diff_counter = itertools.count()
-
-        css_selectors = []
-        css_selector_template = ".side-by-side:has(#{radio_id}:checked) .{div_id}"
-
-        # Fetch git information for file
-        for commit, diff_html in git.get_file_commits(full_path):
-            # Commit list year
-            if year is None or commit.date.year < year:
-                year = commit.date.year
-                commit_list += f"## {year}\n\n{{.index-list}}\n"
-
-            # Diff
-            diff_id = next(diff_counter)
-            diffs += diff_template.format(
-                html=diff_html.replace("`", "&#96;"), diff_id=diff_id, git_hash=commit.hash_id, body=commit.body
-            )
-
-            # Commit list
-            radio_id = next(radio_counter)
-            commit_list += commit_list_template.format(
-                date=commit.date.strftime("%b %d"),
-                date_iso=commit.date.isoformat(),
-                radio_id=radio_id,
-                text=commit.subject,
-                checked="" if css_selectors else "checked",
-            )
-            css_selectors.append(
-                css_selector_template.format(radio_id=f"radio{radio_id}", div_id=f"changelog-diff{diff_id}")
-            )
-
-        # Create changelog page
-        changelog_path = Path(__file__).parent / Path(config.CHANGELOG_TEMPLATE)
-        raw_changelog = Template(changelog_path.read_text("utf-8")).substitute(
-            selectors=",\n".join(css_selectors), commit_list=commit_list, diffs=diffs
-        )
-        changelog_file = config.WEB_PATH / self.changelog_name(relative_file_path).with_suffix(
-            f"{changelog_path.suffix}.txt"
-        )
-        changelog_file.parent.mkdir(parents=True, exist_ok=True)
-        changelog_file.write_text(raw_changelog, "utf-8")
-        input_format = formats.from_extension(Path(config.CHANGELOG_TEMPLATE).suffix)
-        changelog_html, changelog_metadata = self.convert_source_to_html(raw_changelog, input_format, changelog_file)
-        return changelog_html, changelog_metadata
-
-    def generate_page(self, html: str, metadata: dict[str, Any], file_name: Path, changelog: bool = False) -> str:
+    def generate_page(self, html: str, metadata: dict[str, Any], file_name: Path) -> str:
         """Add document and navbar html."""
 
         title = metadata.get("title", metadata.get("auto-title", "Page"))
@@ -183,6 +117,7 @@ class SiteConstructor:
         # HTML Head
         with page.head:
             dom.meta(charset="utf-8")
+            dom.meta(name="viewport", content="width=device-width, initial-scale=1.0")
             dom.link(
                 rel="alternate",
                 title="Atom Feed",
@@ -234,51 +169,35 @@ class SiteConstructor:
                     with dom.div(cls="Post-parent"):
                         with dom.div(cls="Post"):
                             dom_util.raw(html)
-                        with dom.footer():
-                            with dom.p():
-                                if changelog:
-                                    dom.a(
-                                        "Source",
-                                        href=self.changelog_name(file_name).with_suffix(f"{file_name.suffix}.txt"),
-                                    )
-                                    dom_util.text(" | ")
-                                    dom.a(
-                                        "Latest",
-                                        href=file_name.with_suffix(""),
-                                    )
-                                else:
+                        with dom.div(cls="Footer"):
+                            with dom.footer():
+                                with dom.p():
                                     dom.a(
                                         "Source",
                                         href=file_name.with_suffix(f"{file_name.suffix}.txt"),
                                     )
-                                    if not xslt:
-                                        dom_util.text(" | ")
-                                        dom.a(
-                                            "Change log",
-                                            href=self.changelog_name(file_name).with_suffix(""),
-                                        )
+                                    dom_util.text(" | ")
+                                    dom.a(
+                                        "Top",
+                                        href="#top",
+                                    )
         return page.render(xhtml=xslt)
 
-    def write_file(self, relative_file_path: Path, changelog: bool = False) -> bool:
-        """Generate and write file based on file path and type. Return true if the file needs a changelog."""
+    def write_file(self, relative_file_path: Path) -> bool:
+        """Generate and write file based on file path and type."""
 
         # Generate HTML
-        if changelog:
-            article_html, metadata = self.generate_source_changelog(relative_file_path)
-            file_path = config.WEB_PATH / self.changelog_name(relative_file_path).with_suffix(".html")
-        else:
-            source_path = config.SOURCE_PATH / relative_file_path
-            source_text = source_path.read_text("utf-8", errors="ignore")
-            input_format = formats.from_extension(relative_file_path.suffix)
-            article_html, metadata = self.convert_source_to_html(source_text, input_format, source_path)
-            file_path = config.WEB_PATH / relative_file_path
-        document_content = self.generate_page(article_html, metadata, Path(relative_file_path.name), changelog)
+        source_path = config.SOURCE_PATH / relative_file_path
+        source_text = source_path.read_text("utf-8", errors="ignore")
+        input_format = formats.from_extension(relative_file_path.suffix)
+        article_html, metadata = self.convert_source_to_html(source_text, input_format, source_path)
+        file_path = config.WEB_PATH / relative_file_path
+        document_content = self.generate_page(article_html, metadata, Path(relative_file_path.name))
         match metadata.get("file_type", "html"):
             case "html":
                 file_path = file_path.with_suffix(".html")
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 file_path.write_text(document_content, "utf-8")
-                return True
             case "xslt":
                 file_path = file_path.with_suffix(".xslt")
                 tree = etree.parse(config.WEB_PATH / config.FEED_STYLE_PATH)
@@ -290,12 +209,8 @@ class SiteConstructor:
                 document_content = etree.tostring(new_tree, encoding="unicode")
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 file_path.write_text(document_content, "utf-8")
-                return False
             case file_type:
                 logger.error(f'Unknown filetype "{file_type}". Cannot write file.')
-                return False
-
-        # Write file
 
     def process_file(self, relative_file_path: Path) -> None:
         """Convert a file to a webpage."""
@@ -311,16 +226,11 @@ class SiteConstructor:
         try:
             # Generate article
             with timer("Execution"):
-                generate_changelog = self.write_file(relative_file_path)
+                self.write_file(relative_file_path)
                 shutil.copyfile(  # Copy raw file over
                     config.SOURCE_PATH / relative_file_path,
                     config.WEB_PATH / relative_file_path.with_suffix(f"{relative_file_path.suffix}.txt"),
                 )
-
-            # Generate changelog
-            if generate_changelog:
-                with timer("Changelog"):
-                    self.write_file(relative_file_path, True)
         except RuntimeError as e:
             logger.error(f"  Failed: {e}")
 
@@ -340,10 +250,9 @@ class SiteConstructor:
                         if cache.cache_miss(full_path)
                         else None
                     )
-            config.futures |= futures
 
             # Check for exceptions
-            processed_files = [future for future in config.futures.values() if future]
+            processed_files = [future for future in futures.values() if future]
             for future in concurrent.futures.as_completed(processed_files):
                 if exception := future.exception():
                     logger.error("".join(traceback.format_exception(exception)))
@@ -363,13 +272,17 @@ class SiteConstructor:
             fg.language("en-us")
             if feed_path:
                 fg.link(href=f"{feed_path}", rel="related", type="text/xsl")
-            fg.link(href=f"https://{(config.WEBSITE_URL / config.ATOM_PATH.relative_to("/")).as_posix()}", rel="self")
-            fg.link(href=f"https://{config.WEBSITE_URL.as_posix()}", rel="alternate")
+            fg.link(
+                href=f"https://{(config.WEBSITE_URL / config.ATOM_PATH.relative_to("/")).as_posix()}",
+                rel="self",
+                type="application/atom+xml",
+            )
+            fg.link(href=f"https://{config.WEBSITE_URL.as_posix()}/", rel="alternate", type="text/html")
             fg.logo(f"https://{(config.WEBSITE_URL / config.PROFILE_IMAGE.relative_to("/")).as_posix()}")
-            fg.id(f"https://{config.WEBSITE_URL.as_posix()}")
+            fg.id(f"https://{config.WEBSITE_URL.as_posix()}/")
 
             post_list: dict[datetime, list[FeedPost]] = {}
-            for path, _post_future in config.futures.items():
+            for path in futures:
                 if (
                     path.is_relative_to(config.POST_PATH)
                     and path.with_suffix("") != config.POST_PATH / "index"
@@ -377,19 +290,26 @@ class SiteConstructor:
                 ):
                     git_date_created = commits[-1][0].date
                     git_date_modified = commits[0][0].date
-                    title = cache.load_cache()[path].metadata["title"]
+                    title = cache.load_cache()[path].metadata.get("title", "NO TITLE")
                     post_list.setdefault(git_date_created.year, []).append(
                         FeedPost(git_date_created, git_date_modified, title, path)
                     )
             for year in sorted(post_list, reverse=True):
                 for post in sorted(post_list[year]):
                     fe = fg.add_entry()
+                    fe.author(
+                        {
+                            "name": "ZX-80",
+                            "email": f"FeedContact@{config.WEBSITE_URL}",
+                            "uri": f"https://{config.WEBSITE_URL.as_posix()}/",
+                        }
+                    )
                     fe.pubDate(post.date_created.isoformat())
                     fe.updated(post.date_modified.isoformat())
                     fe.title(post.title)
                     post_path = config.WEBSITE_URL / post.source_path.relative_to(config.SOURCE_PATH).with_suffix("")
-                    fe.link(href=f"https://{post_path.as_posix()}", rel="alternate")
-                    fe.id(post_path.as_posix())
+                    fe.link(href=f"https://{post_path.as_posix()}", rel="alternate", type="text/html")
+                    fe.id(f"https://{post_path.as_posix()}")
                     raw_text = post.source_path.read_text(encoding="utf-8").strip("\n")
                     fe.content(f"<pre>\n{raw_text}\n</pre>", type="html")
 
@@ -397,10 +317,16 @@ class SiteConstructor:
                 f'<?xml-stylesheet type="text/xsl" href="{feed_path}" ?>'.encode("utf-8") if feed_path else bytes()
             )
             for short_path, text in ((config.ATOM_PATH, fg.atom_str), (config.RSS_PATH, fg.rss_str)):
-                styled_text: bytes = style_header + text(xml_declaration=False)
+                styled_text: bytes = style_header + text(xml_declaration=False, pretty=True)
                 path = config.WEB_PATH / short_path.relative_to("/")
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(styled_text)
+                fg.link(
+                    href=f"https://{(config.WEBSITE_URL / config.RSS_PATH.relative_to("/")).as_posix()}",
+                    rel="self",
+                    type="application/rss+xml",
+                    replace=True,
+                )
 
             # Write JSON feed
             JSONFeed(fg).write(config.WEB_PATH / config.JSON_PATH.relative_to("/"))

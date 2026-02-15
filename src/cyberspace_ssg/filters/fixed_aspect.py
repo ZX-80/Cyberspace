@@ -9,6 +9,9 @@ from PIL import Image
 
 from .. import config
 
+PRIORITY = 10
+"""The filters execution priority (lower executes earlier)"""
+
 
 def add_aspect(elem: pf.Element, doc: pf.Doc) -> None:
     """Add aspect ratio to all images."""

@@ -15,12 +15,12 @@
     <xsl:variable name="entries_atom" select="/atom:feed/atom:entry[generate-id()=generate-id(key('groupByYear', substring(atom:published,1,4)))]" />
     <xsl:variable name="entries_rss" select="/rss/channel/item[generate-id()=generate-id(key('groupByYear', substring-before(substring-after(substring-after(substring-after(pubDate, ' '), ' '), ' '), ' ')))]" />
     <xsl:for-each select="$entries_atom | $entries_rss">
+        <xsl:sort select="position()" data-type="number" order="descending"/>
 
         <xsl:variable name="year_group">
             <xsl:value-of select="substring(atom:published,1,4)" />
             <xsl:value-of select="substring-before(substring-after(substring-after(substring-after(pubDate, ' '), ' '), ' '), ' ')" />
         </xsl:variable>
-        <xsl:variable name="position_offset" select="position() - 1" />
 
         <h2>
           <xsl:attribute name="id"><xsl:value-of select="$year_group"/></xsl:attribute>
@@ -36,23 +36,8 @@
                 <xsl:variable name="year_entries_rss" select="/rss/channel/item[substring-before(substring-after(substring-after(substring-after(pubDate, ' '), ' '), ' '), ' ')=$year_group]" />
                 <xsl:for-each
                     select="$year_entries_atom | $year_entries_rss">
-                    <xsl:variable name="true_position" select="$position_offset + position()" />
-                    <style>
-                        .side-by-side:has(#radio<xsl:value-of select="$true_position" />:checked) .changelog-diff<xsl:value-of select="$true_position" /> {
-                            display: block;
-                        }
-                    </style>
                     <li>
                         <label>
-                            <!-- Only display matching div -->
-                            <input type="radio" name="changelog">
-                                <xsl:if test="$true_position=1">
-                                    <xsl:attribute name="checked">
-                                        <xsl:value-of select="checked" />
-                                    </xsl:attribute>
-                                </xsl:if>
-                                <xsl:attribute name="id">radio<xsl:value-of select="$true_position" /></xsl:attribute>
-                            </input>
                             <!-- Date label -->
                             <xsl:if test="atom:published">
                                 <xsl:call-template name="format-date-atom">
@@ -65,34 +50,20 @@
                                 </xsl:call-template>
                             </xsl:if>
                             <!-- Title -->
-                            <a><xsl:value-of select="atom:title" /><xsl:value-of select="title" /></a>
+                            <a>
+                              <xsl:attribute name="href">
+                                <xsl:value-of select="atom:link/@href" />
+                                <xsl:value-of select="link" />
+                              </xsl:attribute>
+                              <xsl:value-of select="atom:title" />
+                              <xsl:value-of select="title" />
+                            </a>
                         </label>
                     </li>
                 </xsl:for-each>
             </ul>
         </div>
     </xsl:for-each>
-  </xsl:template>
-
-  <xsl:template name="raw-feeds">
-    <!-- The content for each entry -->
-    <div>
-      <xsl:variable name="raw_entries_atom" select="/atom:feed/atom:entry"/>
-      <xsl:variable name="raw_entries_rss" select="/rss/channel/item"/>
-      <xsl:for-each select="$raw_entries_atom | $raw_entries_rss">
-        <div>
-          <xsl:attribute name="class">changelog-diff<xsl:value-of select="position()"/></xsl:attribute>
-          <div class="highlight">
-            <pre class="diff">
-              <p class="diff-content">
-                <xsl:value-of select="atom:content" disable-output-escaping="yes"/>
-                <xsl:value-of select="description" disable-output-escaping="yes"/>
-              </p>
-            </pre>
-          </div>
-        </div>
-      </xsl:for-each>
-    </div>
   </xsl:template>
 
   <xsl:template name="format-date-atom">

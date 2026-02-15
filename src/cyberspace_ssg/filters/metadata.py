@@ -24,9 +24,6 @@ Usage :{#post-list"}
 Auto-generated list of all posts.
 """
 
-import concurrent.futures
-import datetime
-import time
 from pathlib import Path
 from typing import cast
 
@@ -36,6 +33,10 @@ import panflute as pf
 
 from .. import cache, config, git
 from ..config import logger
+
+PRIORITY = -1
+"""The filters execution priority (lower executes earlier)"""
+
 
 TOC_DEPTH = (2, 2)
 """Start/stop header level to display"""
@@ -99,84 +100,6 @@ def macro_check(elem: pf.Element) -> pf.Span | None:
     return None
 
 
-def post_list_macro(elem: pf.Element, doc: pf.Doc) -> pf.RawBlock | list[None] | None:
-    """Insert the post list."""
-    if span_inline := macro_check(elem):
-        span, inline = span_inline
-
-        match span.identifier.lower():
-
-            case "post-list" if not inline:
-                # Log unknown metadata
-                for attribute, value in span.attributes.items():
-                    logger.warning(f"Unknown metadata attribute: {attribute}={value}")
-
-                # Wait for relevant files to be processed
-                while not config.futures:
-                    time.sleep(0.1)
-                relevant_docs = [
-                    (path, post_future)
-                    for path, post_future in config.futures.items()
-                    if path.is_relative_to(config.POST_PATH) and path != Path(doc.get_metadata("path"))
-                ]
-                concurrent.futures.wait(post_future for _, post_future in relevant_docs if post_future)
-
-                # Build list
-                post_list: dict[datetime.datetime, tuple[datetime.datetime, str, Path]] = {}
-                for path, _ in relevant_docs:
-                    if commits := git.load_git_data().get(path.as_posix(), []):
-                        git_date = commits[-1][0].date
-                        title = cache.load_cache()[path].metadata["title"]
-                        post_list.setdefault(git_date.year, []).append((git_date, title, path))
-                lists = []
-                list_items = []
-                for year in sorted(post_list, reverse=True):
-                    for post in sorted(post_list[year], reverse=True):
-                        list_items.append(
-                            pf.ListItem(
-                                pf.Para(
-                                    pf.Span(
-                                        pf.Str(post[0].strftime("%b %d")),
-                                        classes=["highlighted"],
-                                        attributes={"title": post[0].isoformat()},
-                                    ),
-                                    pf.Link(
-                                        pf.Str(
-                                            post[1],
-                                        ),
-                                        url=(
-                                            Path("/") / post[2].relative_to(config.SOURCE_PATH).with_suffix("")
-                                        ).as_posix(),
-                                    ),
-                                )
-                            )
-                        )
-                    lists.append(
-                        pf.Div(
-                            pf.Header(pf.Link(pf.Str(str(year)), url=f"#{str(year)}"), level=2), identifier=str(year)
-                        )
-                    )
-                    lists.append(pf.Div(pf.BulletList(*list_items), classes=["index-list"]))
-                    list_items = []
-                return pf.Div(
-                    pf.Div(
-                        pf.Header(pf.Link(pf.Str("Date"), url="#Date"), level=1),
-                        pf.HorizontalRule,
-                        *lists,
-                        classes=["date-list"],
-                        identifier="Date",
-                    ),
-                    pf.Div(
-                        pf.Header(pf.Link(pf.Str("Series"), url="#Series"), level=1),
-                        pf.HorizontalRule,
-                        classes=["series-list"],
-                        identifier="Series",
-                    ),
-                    classes=["side-by-side"],
-                )
-    return None
-
-
 def macro_action(elem: pf.Element, doc: pf.Doc) -> pf.RawBlock | list[None] | None:
     """Perform some action based on macro name."""
     if span_inline := macro_check(elem):
@@ -202,15 +125,79 @@ def macro_action(elem: pf.Element, doc: pf.Doc) -> pf.RawBlock | list[None] | No
     return None
 
 
+def link_headers(elem: pf.Element, _doc: pf.Doc) -> None:
+    """Make titles links to themselves."""
+    if (
+        isinstance(elem, pf.Div)
+        and "section" in elem.classes
+        and elem.content
+        and isinstance(header := elem.content[0], pf.Header)
+    ):
+        header.content = pf.ListContainer(pf.Link(*header.content, url=f"#{elem.identifier}"))
+
+
+def find_first_header(elem: pf.Element, doc: pf.Doc) -> pf.Div | None:
+    """Set the title to the first header."""
+    if (
+        "found_title" not in doc.metadata
+        and isinstance(elem, pf.Header)
+        and elem.content
+        and isinstance(link := elem.content[0], pf.Link)
+        and isinstance(string := link.content[0], pf.Str)
+    ):
+        doc.metadata["found_title"] = True
+        doc.metadata["title"] = doc.get_metadata("title", string.text)
+
+        # Add a date if it's a post
+        if (doc_path := Path(doc.get_metadata("path"))).is_relative_to(config.POST_PATH):
+            text = []
+            commits_diffs = git.get_file_commits(doc_path)
+            if len(commits_diffs) >= 1:
+                datetime = commits_diffs[-1][0].date
+                formatted_date_short = datetime.strftime("%b %d, %Y")
+                formatted_date_long = datetime.isoformat()
+                text.append(pf.Span(pf.Str(formatted_date_short), attributes={"title": formatted_date_long}))
+            if len(commits_diffs) > 1:
+                datetime = commits_diffs[0][0].date
+                formatted_date_short = datetime.strftime("%b %d, %Y")
+                formatted_date_long = datetime.isoformat()
+                text.extend(
+                    [
+                        pf.LineBreak,
+                        pf.Span(
+                            pf.Str(f"Revised {formatted_date_short}"),
+                            attributes={"title": formatted_date_long},
+                        ),
+                    ]
+                )
+            return pf.Div(elem, pf.Div(pf.Para(*text), classes=["post-date"]), classes=["side-by-side"])
+    return None
+
+
+def stop_if(elem: pf.Element) -> bool:
+    """Bail if we found a title."""
+    return elem.doc.metadata.get("found_title", False)
+
+
 def finalize(doc: pf.Doc) -> None:
-    """Save the short toc to metadata for later use."""
+    """Save the short toc to metadata for later use, then save metadata to cache."""
     doc.metadata["toc"] = doc.json_toc
+    metadata = {key: doc.get_metadata(key) for key in doc.metadata}
+    cache_database = cache.load_cache()
+    if Path(metadata["path"]) in cache_database:
+        cache_database[Path(metadata["path"])].metadata = metadata
+    else:
+        logger.warning(f"Not in cache. Path: {Path(metadata["path"])}, Keys: {list(cache_database.keys())}")
+    cache.sync_cache(cache_database)
 
 
 def main(doc: pf.Doc | None = None) -> pf.Doc | None:
     """Run document through some filters."""
+    doc = pf.run_filters([link_headers, find_first_header], doc=doc, stop_if=stop_if)
     return pf.run_filters(
-        [remove_wrapper, post_list_macro, build_json_toc, build_toc, macro_action], finalize=finalize, doc=doc
+        [remove_wrapper, build_json_toc, build_toc, macro_action],
+        finalize=finalize,
+        doc=doc,
     )
 
 

@@ -1,7 +1,6 @@
 """Contains common configurations for the package."""
 
 import logging
-from concurrent.futures import Future
 from pathlib import Path
 
 SOURCE_PATH = Path("text")
@@ -55,6 +54,3 @@ JSON_PATH = FEED_PATH / "feed.json"
 # Some globally shared WORM (write once, read many) variables
 logger = logging.getLogger("SSG")
 """Used for console output."""
-
-futures: dict[Path, Future] = {}
-"""A mapping of all the files being processed."""

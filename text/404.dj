@@ -14,7 +14,7 @@ You're looking for something that does not, has not, will not, might not or must
 ```=html
 <form action="https://google.com/search" method="get">
   <input type="hidden" name="sitesearch" value="wasteofcyberspace.net" />
-  <input type="text" name="q" style="margin-bottom: 0.5rem; width: 18rem" />
+  <input type="text" name="q" style="margin-bottom: 0.5rem; width: 18rem; max-width: calc(100vw - 6rem);" />
   <br>
   <input type="submit" value="Search" />
 </form>

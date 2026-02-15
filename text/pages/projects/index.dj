@@ -1,8 +1,8 @@
 # Projects
 
-An index for various projects.
-
 ---
+
+An index for various projects.
 
 {.project-table}
 | Projects                    | Status                | Group     | Description                                                                          |
@@ -82,6 +82,7 @@ An index for various projects.
 [Static Site Generator]: https://github.com/ZX-80/Cyberspace
 [Fn-Remapper]: https://github.com/ZX-80/Fn-Remapper
 [Nim-Dictionary]: https://github.com/ZX-80/Nim-Dictionary
+[HomeLab]: /pages/posts/home_server_hardware
 [METAR Map]: https://github.com/ZX-80/METAR-Map
 [NTSB-Bot]: https://github.com/ZX-80/NTSB-Bot
 [ArduinoMDADriver]: https://github.com/ZX-80/ArduinoMDADriver

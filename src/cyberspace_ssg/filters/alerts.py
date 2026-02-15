@@ -8,6 +8,9 @@ This is a note
 
 import panflute as pf
 
+PRIORITY = 10
+"""The filters execution priority (lower executes earlier)"""
+
 supported_alerts = {"note", "important", "warning", "tip", "caution"}
 
 

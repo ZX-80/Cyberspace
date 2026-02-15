@@ -25,6 +25,10 @@ import pygments.lexers
 
 from ..config import STYLE_PATH, WEB_PATH
 
+PRIORITY = 10
+"""The filters execution priority (lower executes earlier)"""
+
+
 STYLE = "gruvbox-dark"
 """The style for syntax highlighting."""
 

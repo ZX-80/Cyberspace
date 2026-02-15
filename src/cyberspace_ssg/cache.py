@@ -25,6 +25,10 @@ class CacheData:
     metadata: dict[str, Any] = field(default_factory=dict)
     """The document metadata."""
 
+    def __bool__(self) -> bool:
+        """Check metadata exists (if not, file is being processed)."""
+        return bool(self.metadata)
+
 
 type CacheDatabase = dict[Path, CacheData]
 
@@ -86,7 +90,7 @@ def cache_miss(file_path: Path) -> bool:
     # Check for cache hit
     cache_database = load_cache()
     cache_data = cache_database.get(file_path)
-    if cache_data and cache_data.file_hash == file_hash:  # Hit
+    if cache_data and file_hash and cache_data.file_hash == file_hash:  # Hit
         logger.info(f"No work for {file_path}")
         return False
 

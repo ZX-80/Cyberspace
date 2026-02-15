@@ -18,6 +18,10 @@ import itertools
 import dominate.tags as dom
 import panflute as pf
 
+PRIORITY = 10
+"""The filters execution priority (lower executes earlier)"""
+
+
 tab_counter = itertools.count()
 active_child: dict[str, str] = {}
 

@@ -14,6 +14,10 @@ from panflute.elements import RAW_FORMATS
 
 from ..config import JS_PATH
 
+PRIORITY = 10
+"""The filters execution priority (lower executes earlier)"""
+
+
 RAW_FORMATS.add("pyscript")  # Add support for pyscript blocks
 RAW_FORMATS.add("javascript")  # Add support for javascript blocks
 

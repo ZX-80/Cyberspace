@@ -41,7 +41,7 @@ jobs:
           node-version: 22.11.0
         run: npm install -g @mermaid-js/mermaid-cli
       - name: Archive
-        run: git archive -o ./web/repo.zip HEAD
+        run: git archive -o ./web/waste-of-cyberspace.zip HEAD
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5

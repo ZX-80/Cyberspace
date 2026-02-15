@@ -15,6 +15,10 @@ import panflute as pf
 
 from ..config import JS_PATH
 
+PRIORITY = 10
+"""The filters execution priority (lower executes earlier)"""
+
+
 MERMAID_CONFIG = """
 ---
 config:

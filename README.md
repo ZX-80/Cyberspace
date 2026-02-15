@@ -17,16 +17,30 @@ This repo contains the source code and documents for my personal website. My fir
 
 ### Features
   - Easily extensible via filters
-    - Mermaid JS charts
-    - GitHub alerts (see [Markdown Alerts](https://github.com/orgs/community/discussions/16925))
+    - [Mermaid JS](https://mermaid.js.org/) charts (with support for [mermaid-cli](https://github.com/mermaid-js/mermaid-cli))
+    - GitHub style [alerts](https://github.com/orgs/community/discussions/16925)
     - Syntax highlighting (580+ languages)
     - Tabs
     - Table of contents (TOC)
-  - Uses git to manage created / edited dates
+    - [PyScript](https://pyscript.net/) (script in Python instead of JavaScript)
+  - [MathML](https://developer.mozilla.org/en-US/docs/Web/MathML) support
+  - Uses git to manage created / edited dates and changelog
   - Page metadata
   - Automatic anchors for page elements
   - Generated navigation bar with TOC
   - Supports 60+ document types as input
+
+### Libraries used
+
+To speed up development, I've made use of some other libraries:
+
+- [Pygments](https://pygments.org/): Syntax highlighting for nearly 580+ languages.
+- [Pandoc](https://pandoc.org/): Document to HTML conversion
+- [Panflute](https://github.com/sergiocorreia/panflute): Easy editing of pandoc documents
+- [dominate](https://github.com/Knio/dominate/tree/master): HTML templating in Python
+- [Mermaid JS](https://mermaid.js.org/): Chart templates
+- [Mermaid-CLI](https://github.com/mermaid-js/mermaid-cli): Converts mermaid charts to SVG
+- [PyScript](https://pyscript.net/): Browser scripting with Python
 
 ### Top-Level Directories
 
@@ -94,6 +108,9 @@ $ cyberspace serve $PORT ./web
 ```
 
 ## Build Stages
+
+Building is as simple as `git push`, after which a GitHub action will install
+and run the build script, publishing to GitHub pages.
 
 When you first run `build`, it'll scan for css files, top-level source files (for the navigation bar), and filters. Then it will run each source file in the source directory through the following stages:
 
