@@ -99,7 +99,7 @@ class SiteConstructor:
             document_tree,
             input_format="panflute",
             output_format="html",
-            extra_args=["--no-highlight", "--mathml"],
+            extra_args=["--syntax-highlighting=none", "--mathml"],
         )
         return html, metadata
 

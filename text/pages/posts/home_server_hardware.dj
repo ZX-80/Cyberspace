@@ -120,11 +120,14 @@ The below peripherals were used for direct access to the servers if necessary
 
 ## TrueNAS 1
 
+:::: center
+{style="max-width: 80rem;"}
 ::: side-by-side-end
 ![Ubuntu Server](/images/lab/true-1-0-physical.png)
 
 ![Ubuntu Server](/images/lab/true-1-0-logical.png){.inverted}
 :::
+::::
 
 ^ 2023 - 2024`<br>`{=html}
 TrueNAS server, backup server, remote server, and Blu-ray archive\
@@ -245,14 +248,17 @@ A KVM was added to easily share the monitor and keyboard.
 {.active}
 ## TrueNAS 2
 
+:::: center
+{style="max-width: 80rem;"}
 ::: side-by-side-end
 ![Ubuntu Server](/images/lab/true-1-2-physical.png)
 
 ![Ubuntu Server](/images/lab/true-1-2-logical.png){.inverted}
 :::
+::::
 
 ^ 2024 - Present`<br>`{=html}
-TrueNAS server, backup server, remote server, flash server, and Blu-ray 
+TrueNAS server, backup server, remote server, flash server, and Blu-ray
 archive \
 Physical(left) and logical(right). Drives lost to redundancy are displayed in
 red.
@@ -270,7 +276,7 @@ Provides files storage and other services.
 A [special vdev][] was added with similar redundancy (3-way mirror) to the main
 pool for faster metadata access. This was later expanded to a 4-way mirror due
 to the motherboards poor PCIe bifurcation support causing one of the drives to
-occasionally disconnect. 
+occasionally disconnect.
 
 [special vdev]: https://forum.level1techs.com/t/zfs-metadata-special-device-z/159954
 
@@ -353,8 +359,8 @@ the rack. This allows for more drives.
 ### Flash Server
 
 A flash server to allow for fast, reasonably sized storage in a compact space.
-I went with the asustor FS6706T for its six NVMe bays in a small form factor, 
-allowing it to provide high speed access while hiding away in a closet. If I 
+I went with the asustor FS6706T for its six NVMe bays in a small form factor,
+allowing it to provide high speed access while hiding away in a closet. If I
 had to do it again, I'd have chosen the twelve bay model and used 4TB drives.
 With two drives lost to redundancy and one lost to the OS, only half the bays
 are usable.

@@ -17,9 +17,10 @@ def wrap_caption(elem: pf.Element, _doc: pf.Doc) -> pf.Figure | None:
         isinstance(paragraph := elem.next, pf.Para)
         and elem.next.content
         and isinstance(string := elem.next.content[0], pf.Str)
-        and string.text.startswith("^ ")
+        and string.text.startswith("^")
+        and isinstance(elem.next.content[1], pf.Space)
     ):
-        string.text = string.text.removeprefix("^ ")
+        string.text = string.text.removeprefix("^")
         del elem.parent.content[elem.index + 1]  # Remove the caption object
         figure = pf.Figure(
             elem,
