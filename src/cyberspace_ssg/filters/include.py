@@ -15,7 +15,7 @@ from .metadata import macro_check
 
 # TODO: support inline includes
 
-PRIORITY = 10
+PRIORITY = -2
 """The filters execution priority (lower executes earlier)"""
 
 
