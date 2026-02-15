@@ -35,10 +35,11 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-      - name: Install mermaid-cli
+      - name: Install node
         uses: actions/setup-node@v4
         with:
           node-version: 22.11.0
+      - name: Install mermaid-cli
         run: npm install -g @mermaid-js/mermaid-cli
       - name: Archive
         run: git archive -o ./web/waste-of-cyberspace.zip HEAD
