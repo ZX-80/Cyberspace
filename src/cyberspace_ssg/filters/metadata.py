@@ -143,10 +143,10 @@ def find_first_header(elem: pf.Element, doc: pf.Doc) -> pf.Div | None:
         and isinstance(elem, pf.Header)
         and elem.content
         and isinstance(link := elem.content[0], pf.Link)
-        and isinstance(string := link.content[0], pf.Str)
+        and isinstance(link.content[0], pf.Str)
     ):
         doc.metadata["found_title"] = True
-        doc.metadata["title"] = doc.get_metadata("title", string.text)
+        doc.metadata["title"] = doc.get_metadata("title", pf.stringify(link.content))
 
         # Add a date if it's a post
         if (doc_path := Path(doc.get_metadata("path"))).is_relative_to(config.POST_PATH):
