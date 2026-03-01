@@ -41,7 +41,7 @@ You will need:
 
 :::
 {style="width: 20rem;"}
-![USA Flag](/images/fans/istar_bpn_de350hd_front.png)
+![IStar Front](/images/fans/istar_bpn_de350hd_front.png)
 ::::
 
 ### Step 1: Remove the Old Fan and Shroud
@@ -51,7 +51,7 @@ corner and unplugging the 3-pin JST connector. You can discard the cheap fan and
 shroud as these are no longer needed.
 
 {style="width: 20rem;"}
-![USA Flag](/images/fans/istar_bpn_de350hd_step1.jpg)
+![IStar Step 1](/images/fans/istar_bpn_de350hd_step1.jpg)
 
 ### Step 2: Drill Out the Fan Mounting Holes
 
@@ -61,7 +61,7 @@ four mounting holes, to make them wider. Be careful not to hit the PCB on the
 other side with the drill bit.
 
 {style="width: 20rem;"}
-![USA Flag](/images/fans/istar_bpn_de350hd_step2.jpg)
+![IStar Step 2](/images/fans/istar_bpn_de350hd_step2.jpg)
 
 ### Step 3: Cut and Attach the Weather Strips
 
@@ -70,7 +70,7 @@ about covering the 3-pin connection or the fan selector switch as you will not
 use either again.
 
 {style="width: 20rem;"}
-![USA Flag](/images/fans/istar_bpn_de350hd_step3.jpg)
+![IStar Step 3](/images/fans/istar_bpn_de350hd_step3.jpg)
 
 ### Step 4: Screw Your New Fan On
 
@@ -80,7 +80,7 @@ plastic mounting holes (a screwdriver is recommended). Attach the new fan
 connector directly to one of your motherboard fan headers or a fan hub.
 
 {style="width: 20rem;"}
-![USA Flag](/images/fans/istar_bpn_de350hd_step4.jpg)
+![IStar Step 4](/images/fans/istar_bpn_de350hd_step4.jpg)
 
 \
 
@@ -101,7 +101,7 @@ You will need:
 
 :::
 {style="width: 20rem;"}
-![USA Flag](/images/fans/norco_ss500_front.jpg)
+![Norco Front](/images/fans/norco_ss500_front.jpg)
 ::::
 
 ### Step 1: Remove the Old Fan and Shroud
@@ -111,7 +111,7 @@ four screws holding the old fan to the shroud. Discard the old fan, but keep
 the shroud, as we will reuse it.
 
 {style="width: 40rem;"}
-![USA Flag](/images/fans/norco_ss500_step1.jpg)
+![Norco Step 1](/images/fans/norco_ss500_step1.jpg)
 
 ### Step 2: Install the New Fan
 
@@ -121,10 +121,10 @@ place.
 
 ::: side-by-side
 {style="max-width: 20rem;"}
-![USA Flag](/images/fans/norco_ss500_step2.jpg)
+![[Norco Step 2](/images/fans/norco_ss500_step2.jpg)
 
 {style="max-width: 40rem;"}
-![USA Flag](/images/fans/norco_ss500_step_final.jpg)
+![[Norco Installed](/images/fans/norco_ss500_step_final.jpg)
 :::
 
 \
@@ -147,7 +147,7 @@ You will need:
 
 :::
 {style="width: 20rem;"}
-![USA Flag](/images/fans/icy_dock_front.png)
+![[ICY Front](/images/fans/icy_dock_front.png)
 ::::
 
 ### Step 1: Remove the Old Fan and Back Plate
@@ -156,7 +156,7 @@ Remove the two screws on the back holding the fan to the back plate. Then
 remove the screws holding the backplate on. Discard the old fan.
 
 {style="width: 40rem;"}
-![USA Flag](/images/fans/icy_dock_step1.jpg)
+![ICY Step 1](/images/fans/icy_dock_step1.jpg)
 
 ### Step 2: Modify the Chassis (4-pin only)
 
@@ -166,10 +166,10 @@ off with pliers, but you may have better tools.
 
 ::: side-by-side
 {style="max-width: 20rem;"}
-![USA Flag](/images/fans/icy_dock_step2a.jpg)
+![ICY Step 2A](/images/fans/icy_dock_step2a.jpg)
 
 {style="max-width: 20rem;"}
-![USA Flag](/images/fans/icy_dock_step2b.jpg)
+![ICY Step 2B](/images/fans/icy_dock_step2b.jpg)
 :::
 
 ### Step 3: Install the New Fan
@@ -178,4 +178,4 @@ Reattach the back plate, then screw the new fan onto it with the two fan screws.
 Connect the fan header to the 4-pin fan header on the back of the ICY dock.
 
 {style="width: 40rem;"}
-![USA Flag](/images/fans/icy_dock_step3.jpg)
+![ICY Step 3](/images/fans/icy_dock_step3.jpg)
