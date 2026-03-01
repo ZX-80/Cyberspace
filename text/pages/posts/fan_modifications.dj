@@ -2,11 +2,11 @@
   banner="fans/fan_banner.png"
 }
 
-# HDD Cage Fan Modifications
+# Improving HDD Cooling
 
 ---
 
-A collection of instructions for improving the cooling on various drive cages.
+A collection of instructions for improving the cooling on various hardware.
 I tend to use [Noctua][] fans, as they work well for reducing temperatures
 while remaining fairly quite. My home server is in a closet next to my 
 kitchen / living room, so reducing both the temperature and noise is crucial.
@@ -179,3 +179,53 @@ Connect the fan header to the 4-pin fan header on the back of the ICY dock.
 
 {style="width: 40rem;"}
 ![ICY Step 3](/images/fans/icy_dock_step3.png)
+
+## Norco RPC-470
+
+---
+
+:::: side-by-side
+:::
+
+The Norco RPC-470 is a 4U server chassis that contains a fan wall with three
+120mm fans. Replacing them is simple, as the fan housing is designed to be hot
+swappable. This section is based on [Norco Fan Wall Partition 6-pin header?][]
+by Helipil0t and [The mysterious 6-pin fan header on my Inter-Tech server cases][]
+by Thomas Jensen.
+
+[Norco Fan Wall Partition 6-pin header?]: https://www.reddit.com/r/homelab/comments/nzdmya/
+[The mysterious 6-pin fan header on my Inter-Tech server cases]: https://blog.cavelab.dev/2021/03/inter-tech-case-fan-header/
+
+You will need:
+
+- [ ] 120mm Replacement Fan (I'm using a Noctua NF-A12x25)
+
+:::
+{style="width: 20rem;"}
+![ICY Front](/images/fans/norco_front.png)
+::::
+
+### Step 1: Replace the Fans
+
+Press the tab on the orange fan housing and remove it, disconnecting the fan
+connector as well. Replace the 120mm fans, reconnect it, and place it back in
+the fan wall.
+
+{style="width: 40rem;"}
+![ICY Step 3](/images/fans/norco_step1.png)
+
+### Step 2: Connect the Fans
+
+Normally the fan wall runs at 100% speed, but you can control it by using the
+6-pin header. The pinout is listed below, along with a schematic showing how
+to connect your fans (either independently, taking up three headers, or
+combined, taking up one header). These headers can either be connected
+directly to your motherboard, or to a fan hub.
+
+::: side-by-side
+{style="width: 40rem;"}
+![ICY Step 3](/images/fans/norco_step2.png)
+
+{style="width: 40rem;"}
+![ICY Step 3](/images/fans/fan_schematic.png)
+:::
